@@ -1,6 +1,6 @@
 # AISVS C9 enforce-by-class conformance scenario
 
-A concrete action chain plus four adversarial variants for checking an enforce-by-class gate that consumes a sealed worst-case reversibility class over a set of held action receipts. Implementation-neutral. Maps to AISVS v1.0 C9.2.1 (human approval for irreversible), C9.2.3 (reversibility classification), C9.2.4 (runtime enforce-by-class), and C9.2.10 (worst-case across multi-step or multi-agent chains).
+A concrete action chain plus four adversarial variants for checking an enforce-by-class gate that consumes a sealed worst-case reversibility class over a set of held action receipts. Implementation-neutral. Maps to AISVS v1.0 C9.2.1 (human approval for irreversible), C9.2.3 (reversibility classification), C9.2.4 (runtime enforce-by-class), C9.2.8 (approvals cryptographically bound to action parameters, identity, context, and a single-use nonce), and C9.2.10 (worst-case across multi-step or multi-agent chains).
 
 ## Class model (used at seal time)
 
@@ -62,7 +62,7 @@ Take `B1`. An adversary relabels seq 7's class from `irreversible` to `reversibl
 - But `sha256(canonical evidence)` no longer equals the signed `evidenceRef.digest`, because the class lives in the evidence block.
 - Binding fails, the seal contributes no class for seq 7, the gate fails closed, treats it as irreversible, denies.
 
-Test assertion: every signature verifies, the binding does not, the gate denies. The sealed class is non-agent-assertable: an agent cannot assert a lower class any more than it can assert its own permit.
+Test assertion: every signature verifies, the binding does not, the gate denies. The sealed class is non-agent-assertable: an agent cannot assert a lower class any more than it can assert its own permit. This is the conformance test for AISVS C9.2.8, which requires approvals to be cryptographically bound to action parameters, identity, context, and a single-use nonce. A relabel that survives the signature but breaks the binding is exactly the C9.2.8 failure the gate must catch.
 
 ---
 

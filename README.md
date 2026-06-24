@@ -1,6 +1,6 @@
 # AISVS C9 Action-Class Conformance Scenario
 
-An independent, vendor-neutral conformance scenario for the action-class and reversibility controls in the OWASP AI Security Verification Standard (AISVS), chapter C9, Orchestration and Agentic Action.
+An independent, vendor-neutral conformance scenario for the action-class and reversibility controls in the OWASP Artificial Intelligence Security Verification Standard (AISVS) v1.0, chapter C9, Orchestration and Agentic Security.
 
 It hands an enforce-by-class gate a concrete multi-step agent action chain plus four adversarial variants, each with the expected gate decision, so any implementation can be checked against the same cases.
 
@@ -10,6 +10,7 @@ The scenario exercises these AISVS v1.0 C9 controls:
 
 - C9.2.3, reversibility classification of high-impact actions (read-only, reversible, externally reversible, irreversible)
 - C9.2.4, runtime enforcement keyed to that classification
+- C9.2.8, approvals cryptographically bound to action parameters, identity, context, and a single-use nonce (exercised by the relabel-after-signing variant)
 - C9.2.10, worst-case reversibility class across a multi-step or multi-agent chain
 - C9.2.1, human approval for irreversible actions
 
