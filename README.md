@@ -1,5 +1,6 @@
 # Reversibility-graded action-class authority: reference implementation
 
+**Live demo:** https://mayur021.github.io/aisvs-c9-action-class-conformance/
 A small, dependency-light reference model and conformance suite for grading how
 much oversight an agent's action needs by how hard that action is to undo. It
 implements the classification and gating primitives behind OWASP AISVS v1.0
