@@ -5,7 +5,7 @@
 A small, dependency-light reference model and conformance suite for grading how
 much oversight an agent's action needs by how hard that action is to undo. It
 implements the classification and gating primitives behind OWASP AISVS v1.0
-chapter C9 (Orchestration & Agentic Action Security), so an implementation can
+chapter C9 (Orchestration & Agentic Security), so an implementation can
 be checked against a single, explicit definition rather than each one inventing
 its own.
 
