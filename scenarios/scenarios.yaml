@@ -1,0 +1,93 @@
+# Worked scenarios for the reference model.
+#
+# Each scenario states an action's declared effect and consequence, then the
+# reversibility class, oversight and evidence tier the reference model assigns.
+# Scenarios 5 and 6 are the ones that prove reversibility and consequence are
+# independent axes. Scenario 4 proves the fail-closed default. Scenario 7 proves
+# the worst-case-across-chain rule.
+
+- id: read_only_report
+  description: Agent displays scan findings and declared limitations, changes nothing.
+  declared_effect: read_only
+  consequence: LOW
+  expect:
+    reversibility: READ_ONLY
+    oversight: UNATTENDED
+    evidence_tier: basic
+
+- id: local_config_edit
+  description: Agent edits a config file it can restore from a checkpoint.
+  declared_effect: recoverable_local
+  consequence: MEDIUM
+  expect:
+    reversibility: REVERSIBLE
+    oversight: SUPERVISED
+    evidence_tier: standard
+
+- id: merge_to_shared_branch
+  description: >
+    Agent merges a commit to a shared branch. Once downstream pulls it the
+    change is out of the agent's sole control, so it is externally reversible,
+    not merely reversible.
+  declared_effect: externally_recoverable
+  consequence: HIGH
+  expect:
+    reversibility: EXTERNALLY_REVERSIBLE
+    oversight: APPROVAL_REQUIRED
+    evidence_tier: enhanced
+
+- id: production_external_release
+  description: Agent publishes an external production release. Cannot be walked back.
+  declared_effect: non_recoverable
+  consequence: CRITICAL
+  expect:
+    reversibility: IRREVERSIBLE
+    oversight: HUMAN_OWNS
+    evidence_tier: highest
+
+- id: unclassified_action_fails_closed
+  description: >
+    An action whose effect the registry does not declare. Fails closed to the
+    most restrictive class so omitting the class cannot lower the gate.
+  declared_effect: null
+  consequence: LOW
+  expect:
+    reversibility: IRREVERSIBLE
+    oversight: HUMAN_OWNS
+    evidence_tier: highest
+
+- id: low_consequence_but_irreversible
+  description: >
+    A small, unrecoverable deletion with no backup. Low blast radius, but it
+    cannot be undone, so it still lands on the hard gate. Proves reversibility
+    is not a proxy for consequence.
+  declared_effect: non_recoverable
+  consequence: LOW
+  expect:
+    reversibility: IRREVERSIBLE
+    oversight: HUMAN_OWNS
+    evidence_tier: highest
+
+- id: high_consequence_but_reversible
+  description: >
+    A large but fully restorable config change. High blast radius, yet
+    recoverable, so it is elevated by consequence but not treated as
+    irreversible. Proves the two axes move independently.
+  declared_effect: recoverable_local
+  consequence: HIGH
+  expect:
+    reversibility: REVERSIBLE
+    oversight: APPROVAL_REQUIRED
+    evidence_tier: enhanced
+
+- id: composed_chain_worst_case
+  description: >
+    A chain of individually low-risk steps ending in an externally reversible
+    action. Gated at the worst-case class from commencement, not step by step.
+  chain:
+    declared_effects: [read_only, recoverable_local, externally_recoverable]
+    consequences: [LOW, LOW, HIGH]
+  expect:
+    reversibility: EXTERNALLY_REVERSIBLE
+    oversight: APPROVAL_REQUIRED
+    evidence_tier: enhanced
