@@ -160,7 +160,7 @@
       <div class="ovar">&rarr;</div>
       <div class="ovstep"><span class="ovn">05</span><span class="ovt">Decision</span><span class="ovd">Proceed, or blocked, enforced outside the model.</span></div>
     </div>
-    <p class="ov-note">Then walk any of <b>15 real situations</b> across AI SOC, DFIR, pipeline, cloud, OT/ICS, finance, identity and agentic domains. Pick one below and step through it.</p>
+    <p class="ov-note">Then walk any of <b>16 real situations</b> across AI SOC, DFIR, pipeline, cloud, OT/ICS, finance, identity, agentic and control-plane domains. Pick one below and step through it.</p>
   </section>
 
   <div class="picker">
@@ -278,7 +278,11 @@
     {d:"Agentic · multi-agent",a:"Delegate remediation to a sub-agent",rev:"EXTERNALLY_REVERSIBLE",cons:"HIGH",prov:2,
      ctx:"The agent spawns a sub-agent and delegates a remediation task that will act on shared infrastructure.",
      rw:"Externally reversible: effects the sub-agent commits may need another party to unwind.",cw:"Delegated reach across the chain amplifies the blast radius.",
-     oa:"Proceeds after approval. The chain is gated at its worst-case reachable class from the start, not step by step.",ob:""}
+     oa:"Proceeds after approval. The chain is gated at its worst-case reachable class from the start, not step by step.",ob:""},
+    {d:"Control plane",a:"Disable a guardrail in the agent's own policy",rev:"IRREVERSIBLE",cons:"CRITICAL",prov:2,
+     ctx:"The agent proposes to switch off one of the guardrails in its own governance policy, the same policy that decides what it is allowed to do next.",
+     rw:"Irreversible in effect: removing the control that gates every later action means anything the agent does before it is restored runs ungated, and the platform itself is inside the threat model.",cw:"An agent that can weaken its own gate holds open-ended authority over everything it does downstream.",
+     oa:"Proceeds only as an operator-approved, signed, reversible change under a named human owner, never on the agent's own authority.",ob:"Blocked. A change to the control plane that governs the agent cannot run on the agent's own say-so, and it carries only <b>enhanced</b> evidence, below the <b>highest</b> bar. Separate the proposer from the approver: the agent proposes, the operator disposes."}
   ];
 
   const state={c:0,s:0,prov:0};
