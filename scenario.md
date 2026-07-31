@@ -2,6 +2,10 @@
 
 A concrete action chain plus four adversarial variants for checking an enforce-by-class gate that consumes a sealed worst-case reversibility class over a set of held action receipts. Implementation-neutral. Maps to AISVS v1.0 C9.2.1 (human approval for irreversible), C9.2.3 (reversibility classification), C9.2.4 (runtime enforce-by-class), C9.2.8 (approvals cryptographically bound to action parameters, identity, context, and a single-use nonce), and C9.2.10 (worst-case across multi-step or multi-agent chains).
 
+## Scope
+
+Everything here is gate time. Classes are declared and sealed before the chain runs, and the worst case is the ceiling knowable at commencement. Folding the classes that actions instantiated once their targets resolved is a separate, post-execution job and is out of scope for this scenario. Where a declared class and an instantiated one diverge, that divergence is the finding rather than a defect in either.
+
 ## Class model (used at seal time)
 
 Ordering for computing the boundary max (worst-case): `read-only (0) < reversible (1) < externally-reversible (2) < irreversible (3)`. The issuer computes `max_class = worst class across the boundary's receipts` and commits it in the seal.

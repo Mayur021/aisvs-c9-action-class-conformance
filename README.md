@@ -50,6 +50,13 @@ single step shows. The chain's effective class is the worst case reachable
 across it, and the whole chain is gated at that tier from commencement, not step
 by step.
 
+**Scope of the chain rule.** The fold takes the worst of the *declared* classes,
+which is the ceiling knowable at commencement, before any step has run. Folding
+the classes actions actually instantiated once their targets resolved is a
+separate, post-execution job and is not implemented here. The two agree when
+every step lands at or below its declared class; where they diverge, that
+divergence is the finding rather than a defect in either.
+
 ## Oversight and evidence tiers
 
 Oversight rises with the worse of the two axes:
