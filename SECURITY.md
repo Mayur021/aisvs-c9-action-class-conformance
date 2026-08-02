@@ -18,7 +18,8 @@ is the class of bug this policy is mainly about.
 
 | Version | Supported |
 |---|---|
-| v1.0.1 | yes |
+| v1.0.2 | yes |
+| v1.0.1 | fixes land in the next tag |
 | v1.0.0 | fixes land in the next tag |
 | untagged `main` | no |
 
