@@ -18,12 +18,24 @@ commonly diverge):
      most restrictive class, so omitting the classification cannot lower the bar.
   4. The class is derived from the tool's declared effect or policy, never
      asserted by the agent at runtime.
+  5. A declaration is usable only while it is still bound to the contract it was
+     declared against. Observation is optional; where it is absent the model
+     runs declaration-only and behaves exactly as it did before that input
+     existed.
 """
 from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import IntEnum
 from typing import Optional
+
+from .observation import (
+    Binding,
+    Observation,
+    ObservationPolicy,
+    declaration_is_usable,
+    effective_binding,
+)
 
 
 class ReversibilityClass(IntEnum):
@@ -132,31 +144,88 @@ class GateResult:
     oversight: Oversight
     evidence_tier: str
     rationale: str
+    binding: Optional[Binding] = None
+    mode: str = "declaration-only"
+
+
+def recognised_effect(declared_effect: Optional[str]) -> bool:
+    """Whether the registry actually defines this effect.
+
+    An unrecognised string is not a classification, so it counts against
+    declared coverage rather than for it.
+    """
+    return declared_effect is not None and declared_effect in _DECLARED_EFFECT
 
 
 def gate(
     declared_effect: Optional[str],
     consequence: ConsequenceTier = ConsequenceTier.LOW,
+    observation: Optional[Observation] = None,
+    policy: Optional[ObservationPolicy] = None,
 ) -> GateResult:
     """Classify an action and return the gate decision for it.
 
     Enforcement is deterministic and lives outside the agent: this function is
     the policy the agent's proposed action is checked against, it does not ask
     the agent what it thinks the class should be.
+
+    Two modes, and the default is unchanged from earlier releases.
+
+    Declaration-only, when no observation is supplied: the decision rests on the
+    declared class alone, exactly as before. Results recorded against a
+    declaration-only run remain valid.
+
+    Declaration plus observation, when one is supplied: the declaration is used
+    only while it is still bound to the contract it was declared against. A
+    STALE or UNOBSERVED binding makes the declaration unusable, and the action
+    takes the same fail-closed path as an undeclared one. Passing no observation
+    is not the same as observing nothing: the first says this run has no
+    observation layer, the second says the layer looked and could not attest.
     """
     r = classify(declared_effect)
-    ov = required_oversight(r, consequence)
-    if declared_effect is None or declared_effect not in _DECLARED_EFFECT:
+    known = recognised_effect(declared_effect)
+
+    if observation is None:
+        ov = required_oversight(r, consequence)
+        why = (
+            "class undeclared or unrecognised, failed closed to irreversible"
+            if not known
+            else (
+                f"reversibility={r.name.lower()}, consequence={consequence.name.lower()}, "
+                f"oversight is the worse of the two axes"
+            )
+        )
+        return GateResult(
+            reversibility=r,
+            consequence=consequence,
+            oversight=ov,
+            evidence_tier=EVIDENCE_TIER[ov],
+            rationale=why,
+            binding=None,
+            mode="declaration-only",
+        )
+
+    b = effective_binding(observation, policy)
+    if not declaration_is_usable(b):
+        r = ReversibilityClass.IRREVERSIBLE
+        why = (
+            f"declaration not usable: binding={b.name.lower()}, "
+            f"failed closed to irreversible"
+        )
+    elif not known:
         why = "class undeclared or unrecognised, failed closed to irreversible"
     else:
         why = (
             f"reversibility={r.name.lower()}, consequence={consequence.name.lower()}, "
-            f"oversight is the worse of the two axes"
+            f"binding={b.name.lower()}, oversight is the worse of the two axes"
         )
+    ov = required_oversight(r, consequence)
     return GateResult(
         reversibility=r,
         consequence=consequence,
         oversight=ov,
         evidence_tier=EVIDENCE_TIER[ov],
         rationale=why,
+        binding=b,
+        mode="declaration+observation",
     )

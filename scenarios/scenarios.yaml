@@ -91,3 +91,82 @@
     reversibility: EXTERNALLY_REVERSIBLE
     oversight: APPROVAL_REQUIRED
     evidence_tier: enhanced
+
+- id: bound_declaration_is_honoured
+  description: >
+    A reversible action whose declaration is still bound to an unmutated
+    contract. Observation confirms the declaration, so the gate is unchanged
+    from the declaration-only case.
+  declared_effect: recoverable_local
+  consequence: MEDIUM
+  observation:
+    binding: BOUND
+    age_days: 1
+  expect:
+    reversibility: REVERSIBLE
+    oversight: SUPERVISED
+    evidence_tier: standard
+
+- id: stale_declaration_fails_closed
+  description: >
+    A read-only declaration whose contract mutated after it was declared. The
+    declaration is no longer bound to anything, so it cannot lower the gate and
+    the action is treated as unclassified.
+  declared_effect: read_only
+  consequence: LOW
+  observation:
+    binding: STALE
+  expect:
+    reversibility: IRREVERSIBLE
+    oversight: HUMAN_OWNS
+    evidence_tier: highest
+
+- id: unobserved_is_not_agreement
+  description: >
+    A read-only declaration in a run that has an observation layer attached but
+    could not attest this action. Silence is not confirmation, so it fails
+    closed. Proves absence is a third state rather than a synonym for bound.
+  declared_effect: read_only
+  consequence: LOW
+  observation:
+    binding: UNOBSERVED
+  expect:
+    reversibility: IRREVERSIBLE
+    oversight: HUMAN_OWNS
+    evidence_tier: highest
+
+- id: bound_but_expired_ages_out
+  description: >
+    A bound observation older than the staleness policy allows. It ages out to
+    unobserved rather than to stale, because the contract is not known to have
+    mutated, only no longer known to be current.
+  declared_effect: read_only
+  consequence: LOW
+  observation:
+    binding: BOUND
+    age_days: 400
+  policy:
+    max_age_days: 30
+  expect:
+    reversibility: IRREVERSIBLE
+    oversight: HUMAN_OWNS
+    evidence_tier: highest
+
+- id: chain_is_as_stale_as_its_stalest_link
+  description: >
+    A chain of read-only steps where one link's declaration is no longer bound.
+    The worst-case rule runs over the binding axis as it does over class, so the
+    whole chain is gated as though that step were unclassified.
+  chain:
+    declared_effects: [read_only, read_only, read_only]
+    consequences: [LOW, LOW, LOW]
+    observations:
+      - binding: BOUND
+        age_days: 1
+      - binding: STALE
+      - binding: BOUND
+        age_days: 1
+  expect:
+    reversibility: IRREVERSIBLE
+    oversight: HUMAN_OWNS
+    evidence_tier: highest
