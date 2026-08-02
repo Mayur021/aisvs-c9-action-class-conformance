@@ -32,6 +32,35 @@ at all, a ranking built on prior change has a signal pool smaller than the audit
 budget: coverage caps early, and a large share of changes land on entries the
 ranking never reaches at any budget. A clock reaches every entry eventually. A
 ranking reaches only the entries that have already moved.
+
+One corpus bears this out. Measured over 88.6 days of the public MCP registry
+(Bharti, 10.5281/zenodo.21751498), prior description change lifts next-period
+probability 4.8x, but only 5.0% of the population carries any prior change, so a
+5% re-audit budget exhausts the signal pool almost immediately. Against all
+changers that ranking reaches roughly 10%, because about half of all changes
+land on new arrivals it has never seen. That registry is the corpus that
+happened to be measurable, not a protocol this module depends on: nothing here
+is MCP-specific, and the argument above does not rest on these figures.
+
+A class flip supersedes, it does not mutate. A change to the declared action
+class supersedes the prior declaration. Observations bound to a superseded
+declaration do not carry over; the new declaration enters as UNOBSERVED and
+takes the fail-closed path until re-observed. STALE is reserved for contract
+mutation under an unchanged declaration, so emitting it for a flip would record
+a mutation that did not happen. Adapters MUST surface the flip (previous class,
+new class, as-of) as an event; flips toward a less restrictive class SHOULD
+additionally be reported as findings, since at the declaration layer they are
+indistinguishable from adversarial reclassification. Keeping the two states
+apart is what lets `coverage` count contract churn and declaration churn
+separately, which is the measurement the field exists to support.
+
+Raise at the boundary, fail closed in the path. An authoring-time violation at
+ingestion may raise, because nothing downstream can mistake an exception there
+for a verdict: a BOUND observation carrying no observed_as_of does exactly that.
+Anything on the decision path must return a verdict instead. A caller that wraps
+the policy layer and reads an exception as "no policy applied" turns every raise
+in that path into an open gate, so malformed input becomes the strongest verdict
+rather than an error.
 """
 from __future__ import annotations
 
