@@ -1,14 +1,22 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "reversibility-action-class-conformance"
-version = "0.1.0"
+version = "1.0.1"
 description = "Reference implementation and conformance suite for reversibility-graded action-class authority (OWASP AISVS C9)"
 readme = "README.md"
 requires-python = ">=3.9"
-license = { text = "Apache-2.0" }
-dependencies = ["PyYAML>=6.0"]
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+dependencies = []
 
 [project.optional-dependencies]
-test = ["pytest>=7.0"]
+test = ["pytest>=7.0", "PyYAML>=6.0"]
+
+[tool.setuptools]
+packages = ["reversibility"]
 
 [tool.pytest.ini_options]
 pythonpath = ["."]
