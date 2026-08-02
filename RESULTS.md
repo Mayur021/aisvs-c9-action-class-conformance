@@ -6,7 +6,7 @@ Runs of this suite against real implementations, recorded so they can be found a
 
 Results are published and hosted by the implementer, not by this repository. This file links to them. That separation is deliberate: the author of a conformance suite should not also be the publisher of claims made with it.
 
-**Listing is not endorsement, and it is not verification.** No entry here has been independently checked by the suite author. Each result is self-reported by the party that ran it, and every entry says so.
+**Listing is not endorsement, and it is not verification of a result.** Two things are worth keeping apart. Before a row is merged the artifact is checked: the link resolves, and the digest matches the bytes it names. That is so a reader can be sure they are holding the file the row points at. The result inside that file is not checked by the suite author, and no row here carries a verdict the author produced. Each result is self-reported by the party that ran it.
 
 **Products of the suite author's employer are not listed.** They are welcome to run the suite and publish like anyone else, but they will not appear in an index the author maintains.
 
@@ -19,6 +19,10 @@ Any link that resolves to fixed bytes works. A version DOI, a release asset, a p
 | Implementation | Suite release | Date | Result | Self-reported | Re-runnable | Artifact | SHA-256 |
 |---|---|---|---|---|---|---|---|
 | [Shango MID](https://doi.org/10.5281/zenodo.21759078) | v1.0.0 (`50d0571`) | 2026-08-02 | 12 / 14 matched · 1 divergence (recorded as an open research question) · 1 n/a | Yes | No, runner closed | `Shango_AISVS_C9_Scenario_Results_v1.0.0.pdf` | `86e2db073d20ed583b0ecb25ab27a16a4ac545251e5fff22ec7780c09a6437d1` |
+
+**Self-reported** is yes on every row, by design: the index carries no result the suite author produced.
+
+**Re-runnable** says whether someone outside the implementer can execute the run themselves. A result nobody else can reproduce is a report rather than evidence, and that limit belongs in the index rather than only inside the linked document.
 
 **Artifact** names the file each digest pins, since a deposit can carry more than one file and a hash on its own does not say which.
 
