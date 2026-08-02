@@ -10,7 +10,9 @@ Results are published and hosted by the implementer, not by this repository. Thi
 
 **Products of the suite author's employer are not listed.** They are welcome to run the suite and publish like anyone else, but they will not appear in an index the author maintains.
 
-To add an entry, publish the filled results template somewhere durable, then open a pull request adding a row below with the release, the date, a link, and a SHA-256 of the published artifact.
+To add an entry, publish the filled results template somewhere a reader can fetch it unchanged, then open a pull request adding a row below with the release, the date, a link, and a SHA-256 of the published artifact together with the filename that digest belongs to.
+
+Any link that resolves to fixed bytes works. A version DOI, a release asset, a permalink pinned to a commit, or a file on your own site are all fine, because the digest is what proves a reader is holding what you recorded rather than something published later. What does not work is a link that resolves to whatever is newest, a Zenodo concept DOI being the common case, since the bytes behind it change and an indexed digest stops matching without anything appearing to be wrong. Where a deposit carries more than one file, name the file the digest belongs to, because a hash on its own does not say which artifact it pins.
 
 ## Runs
 
