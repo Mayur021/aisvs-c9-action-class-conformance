@@ -14,7 +14,8 @@ Ordering for computing the boundary max (worst-case): `read-only (0) < reversibl
 
 The recipient reads `max_class` straight off the boundary seal and checks membership:
 
-- `max_class in {read-only, reversible}`, permit unattended, emit a durable receipt.
+- `max_class == read-only`, permit unattended.
+- `max_class == reversible`, permit under supervision, emit a durable receipt.
 - `max_class == externally-reversible`, escalate, proceed only with the external dependency acknowledged.
 - `max_class == irreversible`, deny unattended, require synchronous human approval (C9.2.1).
 - Fail closed (treat as irreversible, deny) whenever no class is sealed, or the binding fails, or the held count does not equal the sealed total.
@@ -33,15 +34,15 @@ Boundary `B1`. An agent responds to an alert on a compromised service account.
 |---|---|---|---|---|
 | 1 | read and correlate the alert | read-only | read-only | permit unattended |
 | 2 | enrich (threat intel, account activity) | read-only | read-only | permit unattended |
-| 3 | disable the compromised account | reversible | reversible | permit unattended, receipt |
-| 4 | revoke active sessions and tokens | reversible | reversible | permit unattended, receipt |
-| 5 | quarantine the host it logged into | reversible | reversible | permit unattended, receipt |
+| 3 | disable the compromised account | reversible | reversible | permit supervised, receipt |
+| 4 | revoke active sessions and tokens | reversible | reversible | permit supervised, receipt |
+| 5 | quarantine the host it logged into | reversible | reversible | permit supervised, receipt |
 | 6 | rotate the exposed API credential | externally-reversible | externally-reversible | escalate (downstream reconfig dependency) |
 | 7 | purge the exposed secret store | irreversible | irreversible | deny unattended, require human approval (C9.2.1) |
 
 Seal of `B1`: `total = 7`, `max_class = irreversible`.
 
-Expected: the agent contains autonomously (steps 1 to 5), the gate escalates at the externally-reversible rotation (6), and stops the irreversible purge (7) for a human. A downstream recipient handed `B1` reads `max_class = irreversible` off the seal and governs its own next action against it with no chain re-derivation and no log query.
+Expected: the agent reads and enriches unattended (1 to 2) and contains under supervision (3 to 5), the gate escalates at the externally-reversible rotation (6), and stops the irreversible purge (7) for a human. A downstream recipient handed `B1` reads `max_class = irreversible` off the seal and governs its own next action against it with no chain re-derivation and no log query. Supervision does not block the containment; it puts a human on the loop who can intervene, which is what the reference model requires for any class that changes state.
 
 ---
 
@@ -55,6 +56,8 @@ Two sealing models to test, because this is where the construction is decided:
 - Model 2 (composition-aware): the issuer escalates the class of the receipt that crosses the reconstruction threshold to `irreversible`, so `max_class = irreversible` even though every per-step label is `reversible`. The gate denies at the crossing step.
 
 Test assertion: under Model 2 the sealed `max_class = irreversible` while every receipt's per-step class is `reversible`; the gate denies based on the sealed max, not the per-step labels, and it fires at the threshold-crossing receipt rather than at the final chunk. Open design question: who computes the reachability threshold, and how. This is the genuinely unsolved edge, since the gate can only be as good as the issuer's worst-case computation.
+
+No implementation known to the author computes this, including the reference model in this repository, which folds the maximum of declared classes and is therefore Model 1. This row is recorded as an open research question rather than scored as a deficiency.
 
 ---
 
