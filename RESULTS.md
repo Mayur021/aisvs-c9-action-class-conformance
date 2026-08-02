@@ -20,6 +20,8 @@ Any link that resolves to fixed bytes works. A version DOI, a release asset, a p
 |---|---|---|---|---|---|---|---|
 | [Shango MID](https://doi.org/10.5281/zenodo.21759078) | v1.0.0 (`50d0571`) | 2026-08-02 | 12 / 14 matched · 1 divergence (recorded as an open research question) · 1 n/a | Yes | No, runner closed | `Shango_AISVS_C9_Scenario_Results_v1.0.0.pdf` | `86e2db073d20ed583b0ecb25ab27a16a4ac545251e5fff22ec7780c09a6437d1` |
 
+**Artifact** names the file each digest pins, since a deposit can carry more than one file and a hash on its own does not say which.
+
 ## Reading a result
 
 Check three things before drawing a conclusion from any row.
