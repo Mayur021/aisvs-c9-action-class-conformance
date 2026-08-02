@@ -172,8 +172,17 @@ EXPECTED_SCENARIO_IDS = frozenset(
 
 
 def test_scenario_corpus_is_complete():
-    """The corpus cannot shrink or grow without this test being updated."""
-    found = {sc["id"] for sc in SCENARIOS}
+    """The corpus cannot shrink or grow without this test being updated.
+
+    The id comparison is set-based, so two scenarios sharing an id would
+    collapse to one entry and pass while the parametrised run executed an
+    extra case. Duplicates are rejected first, against the list.
+    """
+    ids = [sc["id"] for sc in SCENARIOS]
+    duplicates = sorted({i for i in ids if ids.count(i) > 1})
+    assert not duplicates, f"duplicate scenario ids: {duplicates}"
+
+    found = set(ids)
     assert found == EXPECTED_SCENARIO_IDS, (
         f"missing: {sorted(EXPECTED_SCENARIO_IDS - found)}, "
         f"unexpected: {sorted(found - EXPECTED_SCENARIO_IDS)}"
