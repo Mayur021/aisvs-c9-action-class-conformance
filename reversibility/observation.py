@@ -12,7 +12,7 @@ compared against the declared one. The failure this models is declaration
 STALENESS, not declaration falsity: the declaration was made against a contract
 that no longer exists.
 
-Three commitments, each of which comes from measurement rather than theory:
+Three commitments, each chosen against a specific failure mode:
 
   1. Corroboration is a count, not a fact, and the threshold belongs to whoever
      knows the observers. This module takes only observations that have already
@@ -27,11 +27,11 @@ Three commitments, each of which comes from measurement rather than theory:
      an as-of time and ages out to UNOBSERVED on a clock.
 
 The clock is deliberate. Ranking entries by prior drift and re-auditing the top
-slice cannot substitute for it: published measurement of the official MCP
-registry over 88.6 days finds prior change lifts next-period probability 4.8x,
-but only 5.0% of the population carries any prior change, so a 5% re-audit
-budget exhausts the signal pool and caps near 19.5% coverage, and roughly half
-of all changes land on entries no history-based ranking reaches at any budget.
+slice cannot substitute for it. Where most of a population has no change history
+at all, a ranking built on prior change has a signal pool smaller than the audit
+budget: coverage caps early, and a large share of changes land on entries the
+ranking never reaches at any budget. A clock reaches every entry eventually. A
+ranking reaches only the entries that have already moved.
 """
 from __future__ import annotations
 
