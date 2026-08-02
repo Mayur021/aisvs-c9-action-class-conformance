@@ -14,7 +14,7 @@ at, not authority to act. Whether an action may run unattended, or must be owned
 by a named human, follows from the class of the action, evaluated outside the
 model that proposed it.
 
-## The model in four ideas
+## The model in five ideas
 
 **1. Four classes, including the two usually lost.**
 
@@ -56,6 +56,50 @@ the classes actions actually instantiated once their targets resolved is a
 separate, post-execution job and is not implemented here. The two agree when
 every step lands at or below its declared class; where they diverge, that
 divergence is the finding rather than a defect in either.
+
+**5. A declaration is only as good as its binding.**
+
+A class is a declaration about what an action does. A declaration made against a
+contract that has since mutated is not evidence about the action running today.
+The model therefore takes an optional second input: whether the declaration is
+still bound to the contract it was declared against.
+
+| Binding | Meaning |
+|---|---|
+| `bound` | The contract the declaration was made against is still in force. |
+| `stale` | The contract mutated after the declaration was made. |
+| `unobserved` | Not enough independent observation to say either way. |
+
+Three states in the record, two outcomes at the gate. `stale` and `unobserved`
+both make a declaration unusable, so both take the same fail-closed path as an
+undeclared action. They stay distinct in the record because the binding gap,
+declared coverage minus verified coverage, cannot be computed from a binary.
+
+**Absence is not agreement.** `unobserved` is a third state, not a synonym for
+`bound`. In a corpus where most entries never change, silence dominates, and
+reading silence as conformance manufactures false comfort at exactly the scale
+where it matters.
+
+**Observations expire, on a clock rather than a ranking.** A `bound` observation
+carries an as-of time and ages out to `unobserved`, not to `stale`: the contract
+is not known to have mutated, it is merely no longer known to be current.
+Ranking entries by prior drift and re-auditing the top slice cannot substitute
+for this, because that ranking exhausts its signal at the carrier fraction and
+everything past it is tie-break.
+
+**A chain is as stale as its stalest link.** The worst-case rule that idea 4
+applies to classes runs over this axis too.
+
+**Declaration-only is the default.** Where no observation is supplied the model
+behaves exactly as it did before this input existed, so results recorded against
+an earlier release stay valid and comparable. Supplying no observation is not
+the same as supplying `unobserved`: the first says this run has no observation
+layer, the second says the layer looked and could not attest.
+
+**What this does not claim.** An observation here is not a witness of execution.
+Nothing observes the action running and no runtime effect is compared against
+the declared one. The failure modelled is declaration *staleness*, not
+declaration *falsity*.
 
 ## Oversight and evidence tiers
 
@@ -119,6 +163,11 @@ so that enforcement layers, assurance schemas and audit records can key on a
 consistent definition. It intentionally says nothing about how authority is
 signed, stored or transported; those are enforcement-layer concerns that sit on
 top of a correct classification.
+
+Where observation is used, the producer's corroboration threshold lives in that
+producer's adapter, outside this repository, so the core holds no
+producer-specific semantics and anyone with different telemetry can write their
+own adapter against the same vocabulary.
 
 ## License
 
