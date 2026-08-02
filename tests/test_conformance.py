@@ -147,6 +147,39 @@ def test_chain_with_hidden_irreversible_step_is_hard_gated():
 
 # --- Property 7: every worked scenario resolves as documented -----------------
 
+# The scenario corpus is pinned by name. Parametrising over whatever the file
+# happens to contain means a corpus that loses entries still reports green, and
+# a run against a shrunken corpus produces a smaller "N of M matched" that reads
+# as an honest partial result rather than a broken suite. Adding or removing a
+# scenario has to be a deliberate edit here as well as in the YAML.
+EXPECTED_SCENARIO_IDS = frozenset(
+    {
+        "read_only_report",
+        "local_config_edit",
+        "merge_to_shared_branch",
+        "production_external_release",
+        "unclassified_action_fails_closed",
+        "low_consequence_but_irreversible",
+        "high_consequence_but_reversible",
+        "composed_chain_worst_case",
+        "bound_declaration_is_honoured",
+        "stale_declaration_fails_closed",
+        "unobserved_is_not_agreement",
+        "bound_but_expired_ages_out",
+        "chain_is_as_stale_as_its_stalest_link",
+    }
+)
+
+
+def test_scenario_corpus_is_complete():
+    """The corpus cannot shrink or grow without this test being updated."""
+    found = {sc["id"] for sc in SCENARIOS}
+    assert found == EXPECTED_SCENARIO_IDS, (
+        f"missing: {sorted(EXPECTED_SCENARIO_IDS - found)}, "
+        f"unexpected: {sorted(found - EXPECTED_SCENARIO_IDS)}"
+    )
+
+
 @pytest.mark.parametrize("sc", SCENARIOS, ids=[s["id"] for s in SCENARIOS])
 def test_worked_scenarios(sc):
     exp = sc["expect"]
