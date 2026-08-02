@@ -1,0 +1,47 @@
+name: conformance
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    name: pytest (py${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.9', '3.10', '3.11', '3.12', '3.13']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install with test extra
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install ".[test]"
+      - name: Run the conformance suite
+        run: python -m pytest -v
+
+  no-runtime-deps:
+    name: package imports with no third-party deps
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install without the test extra
+        run: python -m pip install .
+      - name: Import outside the source tree
+        run: |
+          cd "$RUNNER_TEMP"
+          python -c "import reversibility; print('ok', reversibility.__file__)"
+          python -c "import sys, reversibility; assert 'yaml' not in sys.modules, 'PyYAML pulled in at import time'; print('confirmed: no PyYAML at runtime')"
