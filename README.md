@@ -172,3 +172,8 @@ own adapter against the same vocabulary.
 ## License
 
 Apache-2.0.
+
+
+## Real-data fixtures
+
+Seven scenarios (ids prefixed `real_`) are generated from a measured corpus of the public MCP registry; see [FIXTURES.md](FIXTURES.md) for provenance, the annotation-to-class mapping, and known limits.

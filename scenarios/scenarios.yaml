@@ -170,3 +170,143 @@
     reversibility: IRREVERSIBLE
     oversight: HUMAN_OWNS
     evidence_tier: highest
+
+# --- real-data fixtures (mcpindex drift corpus) ---
+# Contributed by Gautam Bharti from the MCP Declared-Effect Coverage and
+# Contract Binding v1 dataset (CC-BY-4.0; DOI and integrity digests in
+# FIXTURES.md). Generated, not hand-written; regeneration command in
+# FIXTURES.md. Provenance, negative scope, and known limits per fixture
+# are in FIXTURES.md - the _state_only suffix on the flip fixtures is a
+# load-bearing caveat.
+
+- id: real_bound_readonly_tool
+  description: >
+    Real registry tool (tokens 004a96c25250baf5/5cd24987d462b79b), observed 35x
+    over 53 days with contract and declaration unchanged; declares
+    readOnlyHint=true, mapped read_only per the FIXTURES.md table. Confirmed by
+    repeated crawls; a failure here means a gate that cannot pass the
+    best-behaved real tool in the corpus.
+  declared_effect: read_only
+  consequence: LOW
+  observation:
+    binding: BOUND
+    age_days: 0
+  policy:
+    max_age_days: 14
+  expect:
+    reversibility: READ_ONLY
+    oversight: UNATTENDED
+    evidence_tier: basic
+
+- id: real_stale_contract_mutation
+  description: >
+    Real registry tool (tokens 00396363428beb60/1b4f3a57bea9d5b7), observed 35x;
+    its contract (description/schemas) mutated after the declaration was made
+    and the new contract was confirmed by repeated crawls, while the declaration
+    itself never changed. The declaration now describes a contract that no
+    longer exists. This is the canonical description-rewrite (tool-poisoning
+    surface) shape: the mutation trips the contract hash, so a poisoned
+    description cannot ride a stale declaration past the gate.
+  declared_effect: read_only
+  consequence: LOW
+  observation:
+    binding: STALE
+  expect:
+    reversibility: IRREVERSIBLE
+    oversight: HUMAN_OWNS
+    evidence_tier: highest
+
+- id: real_bound_aged_out
+  description: >
+    Real registry tool (tokens 315e208beba99f95/0062985cae8f3503), observed 15x,
+    modeled at the first observation after a real 20-day crawler outage
+    (2026-07-11): its last confirmation was then 24 days old against a 14-day
+    staleness policy. The gap is a real operational event, not a construction:
+    observation pipelines do fail, and a gate that keeps trusting unrefreshed
+    attestations through an outage manufactures exactly the comfort this
+    scenario denies.
+  declared_effect: recoverable_local
+  consequence: MEDIUM
+  observation:
+    binding: BOUND
+    age_days: 24
+  policy:
+    max_age_days: 14
+  expect:
+    reversibility: IRREVERSIBLE
+    oversight: HUMAN_OWNS
+    evidence_tier: highest
+
+- id: real_unobserved_declared_tool
+  description: >
+    Real registry tool (tokens 1d3fc6a852fcd612/d5d0025a871f69be) carrying a
+    declaration but seen in fewer than 3 observations - one of 53 of 37,001
+    declaring tools in this corpus below the corroboration floor. Silence is not
+    conformance: an observation layer that could not attest a tool must fail it
+    closed, or the quietest corner of the corpus becomes the least defended.
+  declared_effect: read_only
+  consequence: LOW
+  observation:
+    binding: UNOBSERVED
+  expect:
+    reversibility: IRREVERSIBLE
+    oversight: HUMAN_OWNS
+    evidence_tier: highest
+
+- id: real_flip_restrictive_state_only
+  description: >
+    Real registry tool (tokens f7576245a2266efd/4f5b438c4667c3c8) whose declared
+    openWorldHint flipped false to true (restrictive direction - plausibly an
+    honest correction), confirmed in 19 crawls, moving the mapped class
+    recoverable_local to externally_recoverable. A class flip supersedes the
+    prior declaration: the new declaration has never been observed, so it enters
+    UNOBSERVED and fails closed until re-observed. No finding is expected for
+    this direction. State outcome only - see FIXTURES.md on the event channel.
+  declared_effect: externally_recoverable
+  consequence: HIGH
+  observation:
+    binding: UNOBSERVED
+  expect:
+    reversibility: IRREVERSIBLE
+    oversight: HUMAN_OWNS
+    evidence_tier: highest
+
+- id: real_flip_permissive_state_only
+  description: >
+    Real registry tool (tokens 7db11cce30d8579e/379e7ff3d2df41a1) whose declared
+    destructiveHint flipped true to false (permissive direction - at the
+    declaration layer indistinguishable from adversarial reclassification),
+    confirmed in 33 crawls, moving the mapped class non_recoverable to
+    read_only. Supersession applies identically: the new, more permissive
+    declaration enters UNOBSERVED and fails closed. A finding IS additionally
+    expected for this direction at the adapter layer; the scenario schema cannot
+    yet assert it. State outcome only.
+  declared_effect: read_only
+  consequence: LOW
+  observation:
+    binding: UNOBSERVED
+  expect:
+    reversibility: IRREVERSIBLE
+    oversight: HUMAN_OWNS
+    evidence_tier: highest
+
+- id: real_chain_stalest_link
+  description: >
+    Three real tools from ONE registry server (token 004a96c25250baf5), binding
+    states bound/stale/bound. The middle link's contract mutated after its
+    declaration; the chain is as stale as its stalest link, so the whole
+    composition is gated as though that step were unclassified - the
+    worst-case-across-chain rule applied to the binding axis.
+  chain:
+    declared_effects: [read_only, read_only, read_only]
+    consequences: [LOW, LOW, LOW]
+    observations:
+      - binding: BOUND
+        age_days: 0
+      - binding: STALE
+      - binding: BOUND
+        age_days: 0
+  expect:
+    reversibility: IRREVERSIBLE
+    oversight: HUMAN_OWNS
+    evidence_tier: highest

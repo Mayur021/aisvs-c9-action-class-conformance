@@ -167,6 +167,14 @@ EXPECTED_SCENARIO_IDS = frozenset(
         "unobserved_is_not_agreement",
         "bound_but_expired_ages_out",
         "chain_is_as_stale_as_its_stalest_link",
+        # real-data fixtures (mcpindex drift corpus) - see FIXTURES.md
+        "real_bound_readonly_tool",
+        "real_stale_contract_mutation",
+        "real_bound_aged_out",
+        "real_unobserved_declared_tool",
+        "real_flip_restrictive_state_only",
+        "real_flip_permissive_state_only",
+        "real_chain_stalest_link",
     }
 )
 
