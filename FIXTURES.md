@@ -1,6 +1,6 @@
 # Real-data fixtures - provenance, mapping, and limits
 
-Seven scenario fixtures in `scenarios/scenarios.yaml` (ids prefixed `real_`) are built
+Seven scenario fixtures in `scenarios/real.yaml` (ids prefixed `real_`) are built
 from real, corroborated, pseudonymized records of the public MCP registry, measured over
 35 crawl observations (2026-06-09 to 2026-08-01, 44,172 tools on reachable
 servers; declared-vs-verified binding gap 24.46 percentage points). Four pytest
@@ -219,3 +219,21 @@ The verifier recomputes results.json from the released CSVs and fails on any
 mismatch. The generator consumes only the record's files, applies the documented
 selection predicates with total-order tie-breaks, and reproduces these fixtures
 byte-identically.
+
+### Install mapping
+
+The generator emits a scenario block and a test module. It does not, and cannot,
+know where a consumer installs them - a second consumer may lay them out
+differently, so a path baked into the generator's output would be wrong for
+someone. The generator's own prose therefore refers to its emitted filenames, and
+the mapping into this repository is recorded here:
+
+| Generator output | Installed in this repository as |
+|---|---|
+| `scenarios_block.yaml` | `scenarios/real.yaml` |
+| `test_real_fixtures_regressions.py` | `tests/test_real_fixtures_regressions.py` |
+| `FIXTURES.md` | `FIXTURES.md` (this file, with this section appended) |
+
+The dataset digests above are unaffected: they pin the record's files, and
+`build_fixtures.py` is unchanged. Re-running the generator against the record
+reproduces the block byte-identically; only where it lands is local.
