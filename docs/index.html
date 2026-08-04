@@ -6,162 +6,270 @@
 <title>Action-Class Gate Lab, AISVS C9 reference</title>
 <style>
   :root{
-    --ground:#ECF1F5;--panel:#FFFFFF;--panel2:#F4F8FB;--line:#D8E1EA;
-    --ink:#14202B;--dim:#5A6975;--faint:#8493A0;
-    --accent:#0B8E99;
-    --c0:#2E9E6C;--c1:#3B7DCE;--c2:#BE8214;--c3:#CD4743;
-    --ok:#2E9E6C;--block:#CD4743;
-    --shadow:0 1px 2px rgba(18,32,45,.06),0 8px 22px rgba(18,32,45,.07);
-    --font-sans:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-    --font-mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+    --bg:#080C11;--bg2:#0C121A;--panel:#101822;--panel2:#0D141D;--line:#1E2B39;--line2:#2A3B4D;
+    --ink:#E4ECF3;--dim:#8FA3B6;--faint:#5D7285;
+    --accent:#25D8C4;--accent2:#0FA394;
+    --c0:#3ECF8E;--c1:#4C9AFF;--c2:#E0A93B;--c3:#FF5F56;
+    --ok:#3ECF8E;--bad:#FF5F56;
+    --mono:ui-monospace,SFMono-Regular,"JetBrains Mono",Menlo,Consolas,"Liberation Mono",monospace;
+    --sans:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
   }
   *{box-sizing:border-box}
-  body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--font-sans);line-height:1.55;-webkit-font-smoothing:antialiased}
-  .wrap{max-width:1080px;margin:0 auto;padding:32px 20px 72px}
-  h1{font-size:1.6rem;margin:0 0 6px;letter-spacing:-.01em}
-  h2{font-size:1.15rem;margin:0 0 4px;letter-spacing:-.01em}
-  h3{font-size:.95rem;margin:0 0 8px}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    background-image:
+      radial-gradient(900px 480px at 12% -8%, rgba(37,216,196,.07), transparent 60%),
+      radial-gradient(760px 420px at 92% 0%, rgba(76,154,255,.06), transparent 62%);
+    background-attachment:fixed;
+  }
+  .wrap{max-width:1120px;margin:0 auto;padding:34px 20px 80px}
+
+  .brow{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin:0 0 14px}
+  .brow .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px var(--accent)}
+  h1{font-size:2rem;margin:0 0 8px;letter-spacing:-.02em;font-weight:700;line-height:1.15}
+  h2{font-size:1.02rem;margin:0;letter-spacing:.01em;font-weight:700}
+  .lede{color:var(--dim);font-size:1.02rem;max-width:70ch;margin:0 0 24px}
   p{margin:0 0 12px}
-  .sub{color:var(--dim);margin:0 0 20px}
-  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px;margin:0 0 20px;box-shadow:var(--shadow)}
-  .note{background:var(--panel2);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:8px;padding:12px 14px;color:var(--dim);font-size:.87rem;margin:0 0 18px}
-  .grid{display:grid;gap:14px}
-  @media(min-width:760px){.grid.two{grid-template-columns:1fr 1fr}}
-  label{display:block;font-size:.8rem;color:var(--dim);margin:0 0 4px;font-weight:600}
-  select,input[type=number]{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--ink);font-family:var(--font-sans);font-size:.9rem}
-  button{border:1px solid var(--line);background:var(--panel);color:var(--ink);padding:8px 14px;border-radius:8px;font-family:var(--font-sans);font-size:.87rem;cursor:pointer}
+
+  .card{background:linear-gradient(180deg,var(--panel) 0%,var(--panel2) 100%);border:1px solid var(--line);border-radius:14px;padding:0;margin:0 0 18px;overflow:hidden}
+  .card > .hd{display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid var(--line);background:rgba(255,255,255,.015)}
+  .card > .bd{padding:20px}
+  .idx{font-family:var(--mono);font-size:.72rem;color:var(--accent);border:1px solid var(--line2);border-radius:6px;padding:2px 7px;letter-spacing:.08em}
+  .hint{color:var(--dim);font-size:.88rem;max-width:78ch;margin:0 0 16px}
+
+  .note{background:rgba(37,216,196,.05);border:1px solid var(--line2);border-left:2px solid var(--accent);border-radius:10px;padding:13px 16px;color:var(--dim);font-size:.87rem;margin:0 0 22px}
+  .note strong{color:var(--ink)}
+
+  .banner{border-radius:12px;padding:14px 18px;margin:0 0 22px;font-family:var(--mono);font-size:.86rem;border:1px solid;display:flex;align-items:center;gap:12px}
+  .banner .led{width:9px;height:9px;border-radius:50%;flex:none}
+  .banner.pass{background:rgba(62,207,142,.07);border-color:rgba(62,207,142,.35);color:#9EE9C4}
+  .banner.pass .led{background:var(--ok);box-shadow:0 0 12px var(--ok)}
+  .banner.fail{background:rgba(255,95,86,.08);border-color:rgba(255,95,86,.4);color:#FFB0AB}
+  .banner.fail .led{background:var(--bad);box-shadow:0 0 12px var(--bad)}
+
+  label{display:block;font-family:var(--mono);font-size:.7rem;color:var(--faint);margin:0 0 5px;letter-spacing:.1em;text-transform:uppercase}
+  select,input[type=number]{width:100%;padding:9px 11px;border:1px solid var(--line2);border-radius:9px;background:var(--bg2);color:var(--ink);font-family:var(--mono);font-size:.86rem;outline:none}
+  select:focus,input:focus{border-color:var(--accent)}
+  button{border:1px solid var(--line2);background:var(--bg2);color:var(--dim);padding:9px 15px;border-radius:9px;font-family:var(--mono);font-size:.8rem;cursor:pointer;letter-spacing:.03em;transition:.14s}
   button:hover{border-color:var(--accent);color:var(--accent)}
-  button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
-  button.primary:hover{opacity:.9;color:#fff}
-  .pill{display:inline-block;padding:2px 9px;border-radius:999px;font-size:.74rem;font-weight:700;letter-spacing:.02em;color:#fff;white-space:nowrap}
-  .r0{background:var(--c0)}.r1{background:var(--c1)}.r2{background:var(--c2)}.r3{background:var(--c3)}
-  .tag{display:inline-block;padding:2px 8px;border-radius:6px;font-size:.74rem;background:var(--panel2);border:1px solid var(--line);color:var(--dim);font-family:var(--font-mono)}
-  table{width:100%;border-collapse:collapse;font-size:.86rem}
-  th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
-  th{color:var(--dim);font-size:.76rem;text-transform:uppercase;letter-spacing:.04em;font-weight:700}
-  .scroll{overflow-x:auto}
-  code,pre{font-family:var(--font-mono);font-size:.82rem}
-  pre{background:#14202B;color:#DCE6ED;padding:14px;border-radius:8px;overflow-x:auto;margin:0}
+  button.primary{background:var(--accent);border-color:var(--accent);color:#04231F;font-weight:700}
+  button.primary:hover{background:var(--accent2);border-color:var(--accent2);color:#04231F}
+  button.on{border-color:var(--accent);color:var(--accent);background:rgba(37,216,196,.09)}
+
+  .grid{display:grid;gap:14px}
+  @media(min-width:780px){.grid.two{grid-template-columns:1fr 1fr}.grid.three{grid-template-columns:repeat(3,1fr)}}
+
+  .pill{display:inline-block;padding:3px 10px;border-radius:999px;font-family:var(--mono);font-size:.7rem;font-weight:700;letter-spacing:.05em;white-space:nowrap;border:1px solid}
+  .r0{color:var(--c0);border-color:rgba(62,207,142,.45);background:rgba(62,207,142,.1)}
+  .r1{color:var(--c1);border-color:rgba(76,154,255,.45);background:rgba(76,154,255,.1)}
+  .r2{color:var(--c2);border-color:rgba(224,169,59,.45);background:rgba(224,169,59,.1)}
+  .r3{color:var(--c3);border-color:rgba(255,95,86,.45);background:rgba(255,95,86,.1)}
+  .tag{display:inline-block;padding:2px 8px;border-radius:6px;font-family:var(--mono);font-size:.72rem;background:var(--bg2);border:1px solid var(--line);color:var(--dim)}
+
+  .scroll{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+  table{width:100%;border-collapse:collapse;font-size:.85rem;min-width:640px}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  tbody tr:last-child td{border-bottom:none}
+  tbody tr:hover{background:rgba(255,255,255,.02)}
+  th{color:var(--faint);font-family:var(--mono);font-size:.68rem;text-transform:uppercase;letter-spacing:.12em;font-weight:600;background:rgba(255,255,255,.015)}
+  td.m{font-family:var(--mono);font-size:.8rem}
+
+  pre{background:#05090D;color:#CFE0EC;border:1px solid var(--line);padding:15px;border-radius:10px;overflow-x:auto;margin:0;font-family:var(--mono);font-size:.79rem;line-height:1.55}
   .ok{color:var(--ok);font-weight:700}
-  .bad{color:var(--block);font-weight:700}
-  .banner{border-radius:12px;padding:14px 18px;margin:0 0 20px;font-weight:600;border:1px solid}
-  .banner.pass{background:#EAF7F0;border-color:#B8E2CC;color:#1D6E4C}
-  .banner.fail{background:#FBECEC;border-color:#F0C4C3;color:#8E2F2C}
+  .bad{color:var(--bad);font-weight:700}
   .muted{color:var(--faint);font-size:.8rem}
-  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-  details{border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin:0 0 8px;background:var(--panel2)}
-  summary{cursor:pointer;font-size:.88rem;font-weight:600}
-  .steps{display:flex;flex-direction:column;gap:8px;margin:0 0 12px}
-  .step{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;align-items:end}
-  footer{color:var(--faint);font-size:.8rem;border-top:1px solid var(--line);padding-top:18px;margin-top:8px}
-  a{color:var(--accent)}
+  .row{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+  .step{display:grid;grid-template-columns:1fr 1fr auto auto;gap:9px;align-items:end;margin:0 0 9px}
+  .metric{border:1px solid var(--line);border-radius:11px;padding:15px 17px;background:var(--bg2)}
+  .metric .k{font-family:var(--mono);font-size:.68rem;color:var(--faint);letter-spacing:.12em;text-transform:uppercase}
+  .metric .v{font-family:var(--mono);font-size:1.7rem;font-weight:700;letter-spacing:-.02em;margin-top:3px}
+  .bar{height:6px;border-radius:99px;background:var(--line);overflow:hidden;margin-top:9px}
+  .bar > i{display:block;height:100%;border-radius:99px}
+  footer{color:var(--faint);font-size:.8rem;border-top:1px solid var(--line);padding-top:20px;margin-top:10px;line-height:1.7}
+  a{color:var(--accent);text-decoration:none;border-bottom:1px solid rgba(37,216,196,.3)}
+  a:hover{border-bottom-color:var(--accent)}
 </style>
 </head>
 <body>
 <div class="wrap">
 
+<div class="brow"><span class="dot"></span> OWASP AISVS C9 &nbsp;/&nbsp; reference implementation &nbsp;/&nbsp; runs client-side</div>
 <h1>Action-Class Gate Lab</h1>
-<p class="sub">Run an action through the reversibility-graded gate and watch what it decides, in the browser. Nothing is sent anywhere.</p>
+<p class="lede">Put an action through a reversibility-graded gate and watch what it decides. Every scenario the
+conformance suite ships is executed here, in your browser, against the same model. Nothing is sent anywhere and
+there is no server.</p>
 
 <div class="note">
-  <strong>This is the reference, not a product.</strong> It implements the same model as
-  <code>reversibility/model.py</code>, <code>chain.py</code> and <code>observation.py</code> in the conformance
-  repository, so it grades identically to the suite. It is not a candidate for the results index: it is the thing
-  rows in that index are compared against. No real systems, credentials or data touch it, and there is no server.
+  <strong>This is the reference, not a product.</strong> It ports <code>reversibility/model.py</code>,
+  <code>chain.py</code> and <code>observation.py</code> from the conformance repository, so it grades identically
+  to the suite. It is deliberately not a candidate for the results index: it is the thing rows in that index are
+  compared against. No real systems, credentials or data touch it.
 </div>
 
-<div id="selftest" class="banner">Running the corpus…</div>
+<div id="selftest" class="banner"><span class="led"></span><span id="selftestText">running the corpus…</span></div>
 
 <div class="card">
-  <h2>1. Conformance corpus</h2>
-  <p class="sub">The 13 scenarios the suite ships, executed here against the same model. Each states what the model
-  should return; a mismatch anywhere means this page and the suite disagree, and the banner above says so.</p>
-  <div class="scroll"><table id="corpus">
-    <thead><tr><th>Scenario</th><th>Input</th><th>Class</th><th>Oversight</th><th>Evidence</th><th>Expected</th></tr></thead>
-    <tbody></tbody>
-  </table></div>
-</div>
-
-<div class="card">
-  <h2>2. Sector walkthroughs</h2>
-  <p class="sub"><strong>Illustrative, not corpus.</strong> These are not part of the conformance suite and carry no
-  expected verdict. They exist to show the same four classes applied outside a lab, and they run through exactly the
-  same gate as section 1.</p>
-  <div class="row" style="margin-bottom:14px" id="sectorTabs"></div>
-  <div class="scroll"><table id="sector">
-    <thead><tr><th>Action</th><th>Declared effect</th><th>Consequence</th><th>Class</th><th>Oversight</th><th>Why this class</th></tr></thead>
-    <tbody></tbody>
-  </table></div>
-</div>
-
-<div class="card">
-  <h2>3. Take one action through the gate</h2>
-  <div class="grid two">
-    <div>
-      <label for="eff">Declared effect (from the tool registry)</label>
-      <select id="eff">
-        <option value="read_only">read_only</option>
-        <option value="recoverable_local">recoverable_local</option>
-        <option value="externally_recoverable">externally_recoverable</option>
-        <option value="non_recoverable">non_recoverable</option>
-        <option value="externally_visible">externally_visible</option>
-        <option value="__unknown__">something the registry does not define</option>
-        <option value="__null__">not declared at all</option>
-      </select>
-    </div>
-    <div>
-      <label for="cons">Consequence tier (independent axis)</label>
-      <select id="cons">
-        <option>LOW</option><option>MEDIUM</option><option>HIGH</option><option>CRITICAL</option>
-      </select>
-    </div>
-    <div>
-      <label for="obs">Observation layer</label>
-      <select id="obs">
-        <option value="none">none attached (declaration-only)</option>
-        <option value="BOUND">BOUND</option>
-        <option value="STALE">STALE</option>
-        <option value="UNOBSERVED">UNOBSERVED</option>
-      </select>
-    </div>
-    <div>
-      <label for="age">Observation age in days (BOUND only)</label>
-      <input id="age" type="number" min="0" value="1">
-    </div>
-    <div>
-      <label for="maxage">Staleness policy, max age in days (0 = never expires)</label>
-      <input id="maxage" type="number" min="0" value="0">
-    </div>
-    <div style="display:flex;align-items:end"><button class="primary" id="run">Run the gate</button></div>
-  </div>
-  <div style="margin-top:16px">
-    <h3>Decision record</h3>
-    <pre id="record">Press "Run the gate".</pre>
+  <div class="hd"><span class="idx">01</span><h2>Conformance corpus</h2></div>
+  <div class="bd">
+    <p class="hint">The 13 scenarios the suite ships, executed here against the same model. Each states the verdict
+    the reference should return. A mismatch anywhere means this page and the suite disagree, and the strip above
+    says so rather than rendering quietly.</p>
+    <div class="scroll"><table id="corpus">
+      <thead><tr><th>Scenario</th><th>Input</th><th>Class</th><th>Oversight</th><th>Evidence</th><th>Verdict</th></tr></thead>
+      <tbody></tbody>
+    </table></div>
   </div>
 </div>
 
 <div class="card">
-  <h2>4. Composed chain</h2>
-  <p class="sub">A sequence of individually mild steps can reach an outcome no single step shows. The chain is graded
-  at its worst reachable class from commencement, not step by step, and it is as stale as its stalest link.</p>
-  <div class="steps" id="steps"></div>
-  <div class="row" style="margin-bottom:14px">
-    <button id="addStep">Add step</button>
-    <button id="preset1">Preset: three mild steps, one external</button>
-    <button id="preset2">Preset: all read-only, one link stale</button>
-    <button class="primary" id="runChain">Gate the chain</button>
+  <div class="hd"><span class="idx">02</span><h2>Sector walkthroughs</h2></div>
+  <div class="bd">
+    <p class="hint"><strong style="color:var(--c2)">Illustrative, not corpus.</strong> These are not part of the
+    conformance suite and carry no expected verdict. They exist to show the same four classes applied outside a lab,
+    and they run through exactly the same gate as section 01. Watch for the rows where the two axes disagree.</p>
+    <div class="row" style="margin-bottom:16px" id="sectorTabs"></div>
+    <div class="scroll"><table id="sector">
+      <thead><tr><th>Action</th><th>Declared effect</th><th>Consequence</th><th>Class</th><th>Oversight</th><th>Why this class</th></tr></thead>
+      <tbody></tbody>
+    </table></div>
   </div>
-  <pre id="chainRecord">Add steps, then gate the chain.</pre>
+</div>
+
+<div class="card">
+  <div class="hd"><span class="idx">03</span><h2>Take one action through the gate</h2></div>
+  <div class="bd">
+    <div class="grid two">
+      <div>
+        <label for="eff">Declared effect, from the tool registry</label>
+        <select id="eff">
+          <option value="read_only">read_only</option>
+          <option value="recoverable_local">recoverable_local</option>
+          <option value="externally_recoverable">externally_recoverable</option>
+          <option value="non_recoverable">non_recoverable</option>
+          <option value="externally_visible">externally_visible</option>
+          <option value="__unknown__">a string the registry does not define</option>
+          <option value="__null__">not declared at all</option>
+        </select>
+      </div>
+      <div>
+        <label for="cons">Consequence tier, independent axis</label>
+        <select id="cons"><option>LOW</option><option>MEDIUM</option><option>HIGH</option><option>CRITICAL</option></select>
+      </div>
+      <div>
+        <label for="obs">Observation layer</label>
+        <select id="obs">
+          <option value="none">none attached, declaration-only</option>
+          <option value="BOUND">BOUND</option>
+          <option value="STALE">STALE</option>
+          <option value="UNOBSERVED">UNOBSERVED</option>
+        </select>
+      </div>
+      <div>
+        <label for="age">Observation age in days, BOUND only</label>
+        <input id="age" type="number" min="0" value="1">
+      </div>
+      <div>
+        <label for="maxage">Staleness policy, max age in days, 0 = never expires</label>
+        <input id="maxage" type="number" min="0" value="0">
+      </div>
+      <div style="display:flex;align-items:end"><button class="primary" id="run">Run the gate</button></div>
+    </div>
+    <div style="margin-top:18px"><label>Decision record</label><pre id="record">press "run the gate"</pre></div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="hd"><span class="idx">04</span><h2>Composed chain</h2></div>
+  <div class="bd">
+    <p class="hint">A sequence of individually mild steps can reach an outcome no single step shows. The chain is
+    graded at its worst reachable class from commencement, not step by step, and it is as stale as its stalest link.
+    An empty chain has established no bound at all and fails closed.</p>
+    <div id="steps"></div>
+    <div class="row" style="margin:14px 0">
+      <button id="addStep">+ add step</button>
+      <button id="preset1">preset: three mild steps, one external</button>
+      <button id="preset2">preset: all read-only, one link stale</button>
+      <button id="clearSteps">clear</button>
+      <button class="primary" id="runChain">Gate the chain</button>
+    </div>
+    <pre id="chainRecord">add steps, then gate the chain</pre>
+  </div>
+</div>
+
+<div class="card">
+  <div class="hd"><span class="idx">05</span><h2>Coverage and the binding gap</h2></div>
+  <div class="bd">
+    <p class="hint">A declaration is only usable while it is still bound to the contract it was made against.
+    Across a population of actions, <em>declared</em> is the share carrying a class the gate can read, and
+    <em>verified</em> is the share whose declaration is also still bound. The difference is the share that
+    <strong>looks classified and is not attested</strong>. That gap is invisible to any check that counts
+    declarations alone.</p>
+    <div class="row" style="margin-bottom:16px" id="covPresets"></div>
+    <div class="grid three" style="margin-bottom:16px">
+      <div class="metric"><div class="k">declared</div><div class="v" id="cDeclared" style="color:var(--c1)">0.0%</div><div class="bar"><i id="bDeclared" style="background:var(--c1);width:0"></i></div></div>
+      <div class="metric"><div class="k">verified</div><div class="v" id="cVerified" style="color:var(--c0)">0.0%</div><div class="bar"><i id="bVerified" style="background:var(--c0);width:0"></i></div></div>
+      <div class="metric"><div class="k">binding gap</div><div class="v" id="cGap" style="color:var(--c3)">0.0%</div><div class="bar"><i id="bGap" style="background:var(--c3);width:0"></i></div></div>
+    </div>
+    <div class="scroll"><table id="covTable">
+      <thead><tr><th>Declared effect</th><th>Observation</th><th>Recognised</th><th>Usable</th><th>Counts as</th></tr></thead>
+      <tbody></tbody>
+    </table></div>
+    <p class="muted" style="margin-top:12px">Staleness policy for this panel: observations older than 30 days age
+    out to unobserved. A declaration-only population has no observations, so the gap is not computable rather than
+    zero, which is a different statement.</p>
+  </div>
+</div>
+
+<div class="card">
+  <div class="hd"><span class="idx">06</span><h2>Class flip, supersession</h2></div>
+  <div class="bd">
+    <p class="hint">When a tool's declared class changes, the new declaration <strong>supersedes</strong> the old
+    one rather than mutating it. Observations bound to the superseded declaration do not carry over: the new
+    declaration enters as <span class="tag">UNOBSERVED</span> and takes the fail-closed path until re-observed.
+    Emitting <span class="tag">STALE</span> here would record a contract mutation that never happened, and keeping
+    the two apart is what lets coverage count contract churn and declaration churn separately.</p>
+    <div class="grid two" style="margin-bottom:16px">
+      <div>
+        <label for="flipFrom">Previous declared effect</label>
+        <select id="flipFrom">
+          <option value="read_only">read_only</option>
+          <option value="recoverable_local">recoverable_local</option>
+          <option value="externally_recoverable" selected>externally_recoverable</option>
+          <option value="non_recoverable">non_recoverable</option>
+        </select>
+      </div>
+      <div>
+        <label for="flipTo">New declared effect</label>
+        <select id="flipTo">
+          <option value="read_only" selected>read_only</option>
+          <option value="recoverable_local">recoverable_local</option>
+          <option value="externally_recoverable">externally_recoverable</option>
+          <option value="non_recoverable">non_recoverable</option>
+        </select>
+      </div>
+      <div>
+        <label for="flipCons">Consequence tier</label>
+        <select id="flipCons"><option>LOW</option><option>MEDIUM</option><option>HIGH</option><option>CRITICAL</option></select>
+      </div>
+      <div style="display:flex;align-items:end"><button class="primary" id="runFlip">Apply the flip</button></div>
+    </div>
+    <pre id="flipRecord">a permissive flip is preselected: externally_recoverable becomes read_only</pre>
+  </div>
 </div>
 
 <footer>
   Implements OWASP AISVS v1.0 C9.2.3, C9.2.4, C9.2.10 and C9.5.3 as expressed in the reference model.
-  Source of truth: <a href="https://github.com/Mayur021/aisvs-c9-action-class-conformance">Mayur021/aisvs-c9-action-class-conformance</a>, Apache-2.0.
-  Independent runs are indexed in RESULTS.md by link and digest; this page is not one of them.
+  Ported from <code>model.py</code>, <code>chain.py</code> and <code>observation.py</code>; the corpus runs on load
+  so disagreement with the suite is reported rather than hidden. If the model changes, re-check this page.<br>
+  Source: <a href="https://github.com/Mayur021/aisvs-c9-action-class-conformance">Mayur021/aisvs-c9-action-class-conformance</a>, Apache-2.0.
+  Independent runs are indexed in RESULTS.md by link and digest. This page is not one of them.
 </footer>
 
 </div>
 <script>
+
 /* ---------- the model, ported 1:1 from reversibility/model.py ---------- */
 const R = {READ_ONLY:0, REVERSIBLE:1, EXTERNALLY_REVERSIBLE:2, IRREVERSIBLE:3};
 const C = {LOW:0, MEDIUM:1, HIGH:2, CRITICAL:3};
@@ -280,13 +388,59 @@ function runScenario(s){
   return gate(s.effect, C[s.consequence], s.observation ? obsFrom(s.observation) : null, policyFrom(s.policy));
 }
 
-/* ---------- sector walkthroughs: illustrative, NOT corpus ---------- */
+
+
+/* ---------- coverage(), ported from observation.py ---------- */
+function coverage(actions, policy){
+  const n = actions.length;
+  if(n === 0) return {population:0, declared:0, verified:0, binding_gap:0};
+  let declared = 0, verified = 0;
+  actions.forEach(a => {
+    const known = recognisedEffect(a.effect);
+    if(known){
+      declared++;
+      if(declarationIsUsable(effectiveBinding(a.obs, policy))) verified++;
+    }
+  });
+  return {population:n, declared:declared/n, verified:verified/n, binding_gap:(declared-verified)/n};
+}
+
+/* ---------- class flip supersession, from the observation.py rule ---------- */
+/* A flip supersedes rather than mutates. The new declaration enters UNOBSERVED
+   and takes the fail-closed path until re-observed. STALE is reserved for
+   contract mutation under an UNCHANGED declaration, so emitting STALE for a
+   flip would record a mutation that did not happen. */
+function supersede(prevEffect, newEffect, asOf){
+  const flipped = prevEffect !== newEffect;
+  if(!flipped) return {flipped:false, observation:null, event:null};
+  const prevR = classify(prevEffect), newR = classify(newEffect);
+  const permissive = newR < prevR;
+  return {
+    flipped: true,
+    observation: {binding: B.UNOBSERVED, ageDays: null},
+    event: {
+      type: "class_flip",
+      previous_class: Rname[prevR],
+      new_class: Rname[newR],
+      as_of: asOf,
+      direction: permissive ? "permissive" : "restrictive",
+      report_as_finding: permissive
+    }
+  };
+}
+
 const SECTORS = {
  "OT / ICS": [
   {a:"Read a Modbus holding register", e:"read_only", c:"LOW", why:"Observes process state, changes nothing."},
   {a:"Write a setpoint inside its permitted band", e:"recoverable_local", c:"MEDIUM", why:"The previous setpoint can be restored by the same operator."},
   {a:"Download revised ladder logic to a PLC", e:"non_recoverable", c:"HIGH", why:"The prior program is not recoverable from the controller once overwritten."},
-  {a:"Issue a breaker trip command", e:"non_recoverable", c:"CRITICAL", why:"The physical event has already happened; re-closing is a new action, not an undo."},
+  {a:"Issue a breaker trip command", e:"non_recoverable", c:"CRITICAL", why:"The physical event has happened. Re-closing is a new action, not an undo."},
+ ],
+ "Power and grid": [
+  {a:"Poll SCADA telemetry for a feeder", e:"read_only", c:"LOW", why:"Read of measured state."},
+  {a:"Change a protection relay setting group", e:"recoverable_local", c:"HIGH", why:"The prior group is restorable, but a wrong setting during a fault is high blast radius. The consequence axis lifts it, not reversibility."},
+  {a:"Execute a load-shedding schedule", e:"externally_recoverable", c:"CRITICAL", why:"Supply is restored by dispatch, not by the agent that shed it."},
+  {a:"Submit a settlement declaration to the market operator", e:"externally_visible", c:"MEDIUM", why:"On the record with the operator. A correction is a new submission."},
  ],
  "BFSI": [
   {a:"Query an account balance", e:"read_only", c:"LOW", why:"No state changes."},
@@ -295,22 +449,53 @@ const SECTORS = {
   {a:"File a regulatory return to the supervisor", e:"externally_visible", c:"MEDIUM", why:"Once filed it is on the record. A correction is a second filing, not a retraction."},
  ],
  "Healthcare": [
-  {a:"View a patient record", e:"read_only", c:"LOW", why:"Read. Access is logged; nothing changes."},
+  {a:"View a patient record", e:"read_only", c:"LOW", why:"Read. Access is logged, nothing changes."},
   {a:"Amend an unsigned draft note", e:"recoverable_local", c:"MEDIUM", why:"The draft is still the author's to change."},
-  {a:"Transmit records to an external provider", e:"externally_recoverable", c:"HIGH", why:"The receiving provider now holds a copy and controls its deletion."},
+  {a:"Transmit records to an external provider", e:"externally_recoverable", c:"HIGH", why:"The receiving provider holds a copy and controls its deletion."},
   {a:"Issue an electronic prescription", e:"non_recoverable", c:"HIGH", why:"Cancellation does not un-dispense."},
+ ],
+ "Pharma and manufacturing": [
+  {a:"Read a batch record", e:"read_only", c:"LOW", why:"Read of a controlled record."},
+  {a:"Adjust a recipe parameter before the batch starts", e:"recoverable_local", c:"MEDIUM", why:"Nothing has been made yet."},
+  {a:"Sign a batch release", e:"externally_visible", c:"HIGH", why:"The signature is the record. Withdrawal is a separate regulated event."},
+  {a:"Dispatch released stock to distribution", e:"non_recoverable", c:"HIGH", why:"Recall is a new process with its own cost, not an undo."},
+ ],
+ "Telecom": [
+  {a:"Look up a subscriber's provisioning state", e:"read_only", c:"LOW", why:"Read."},
+  {a:"Change a subscriber tariff plan", e:"recoverable_local", c:"MEDIUM", why:"The prior plan can be reinstated by the same operator."},
+  {a:"Port a number to another operator", e:"externally_recoverable", c:"HIGH", why:"Reversal requires the receiving operator to cooperate."},
+  {a:"Execute a lawful interception order", e:"externally_visible", c:"MEDIUM", why:"The interception has occurred and is on a compliance record."},
+ ],
+ "Public services": [
+  {a:"Verify a citizen credential", e:"read_only", c:"LOW", why:"Verification without mutation."},
+  {a:"Correct a demographic field in a draft application", e:"recoverable_local", c:"LOW", why:"Still a draft the office controls."},
+  {a:"Disburse a benefit payment to a beneficiary account", e:"externally_recoverable", c:"HIGH", why:"Recovery requires the receiving bank and the beneficiary."},
+  {a:"Publish a public notice or gazette entry", e:"externally_visible", c:"LOW", why:"Low direct impact and permanently on the public record. Sensitivity-keyed policies auto-approve this."},
+ ],
+ "Retail and e-commerce": [
+  {a:"Read an order history", e:"read_only", c:"LOW", why:"Read."},
+  {a:"Change a price in a staging catalogue", e:"recoverable_local", c:"MEDIUM", why:"Not yet customer-visible."},
+  {a:"Issue a refund as store credit", e:"recoverable_local", c:"MEDIUM", why:"Stays inside the merchant's own ledger."},
+  {a:"Send a promotional email to the customer base", e:"externally_visible", c:"LOW", why:"Cheap, low impact, and completely unrecallable once sent."},
  ],
  "SOC / IR": [
   {a:"Enrich an alert with threat intelligence", e:"read_only", c:"LOW", why:"Analysis only."},
-  {a:"Isolate a host from the network", e:"recoverable_local", c:"HIGH", why:"Reversible by the same team, but high blast radius lifts the gate on the second axis."},
+  {a:"Isolate a host from the network", e:"recoverable_local", c:"HIGH", why:"Reversible by the same team, but high blast radius lifts the gate on the consequence axis alone."},
   {a:"Disable a user account across the estate", e:"recoverable_local", c:"HIGH", why:"Re-enabling is available to the same team."},
   {a:"Notify the regulator inside the statutory reporting window", e:"externally_visible", c:"LOW", why:"Low technical impact and completely unrecoverable. This is the case a sensitivity-keyed policy auto-approves."},
+ ],
+ "Cloud platform": [
+  {a:"List objects in a private bucket", e:"read_only", c:"LOW", why:"Read. Sensitive resource, no state change."},
+  {a:"Apply an infrastructure change with a stored plan", e:"recoverable_local", c:"HIGH", why:"The prior state file supports a revert by the same team."},
+  {a:"Grant a standing administrative role", e:"externally_recoverable", c:"HIGH", why:"Revocation is possible but what the holder did meanwhile is not undone by it."},
+  {a:"Publish an artefact to a public registry", e:"non_recoverable", c:"MEDIUM", why:"Yanking a version does not retrieve the copies already pulled."},
  ],
 };
 
 /* ---------- rendering ---------- */
 function pill(r){ return `<span class="pill r${r}">${Rname[r]}</span>`; }
 function esc(s){ return String(s).replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[m])); }
+function pct(x){ return (x*100).toFixed(1) + "%"; }
 
 function renderCorpus(){
   const tb = document.querySelector("#corpus tbody");
@@ -321,24 +506,25 @@ function renderCorpus(){
     const match = got.reversibility===s.expect.reversibility && got.oversight===s.expect.oversight && got.evidence_tier===s.expect.evidence_tier;
     if(match) pass++;
     const input = s.chain
-      ? `chain of ${s.chain.effects.length}: <span class="tag">${s.chain.effects.join(" → ")}</span>${s.chain.observations?'<br><span class="muted">one link stale</span>':''}`
-      : `<span class="tag">${s.effect === null ? "not declared" : esc(s.effect)}</span> <span class="tag">${s.consequence}</span>${s.observation?` <span class="tag">${s.observation.binding}</span>`:""}`;
+      ? `<span class="tag">chain of ${s.chain.effects.length}</span> ${s.chain.effects.map(e=>`<span class="tag">${esc(e)}</span>`).join(" ")}${s.chain.observations?'<br><span class="muted">one link stale</span>':''}`
+      : `<span class="tag">${s.effect === null ? "undeclared" : esc(s.effect)}</span> <span class="tag">${s.consequence}</span>${s.observation?` <span class="tag">${s.observation.binding}${s.observation.age_days!==undefined?" "+s.observation.age_days+"d":""}</span>`:""}${s.policy?` <span class="tag">max ${s.policy.max_age_days}d</span>`:""}`;
     tb.insertAdjacentHTML("beforeend", `<tr>
-      <td><strong>${esc(s.id)}</strong></td>
+      <td class="m">${esc(s.id)}</td>
       <td>${input}</td>
       <td>${pill(g.reversibility)}</td>
-      <td>${Oname[g.oversight]}</td>
-      <td>${g.evidence_tier}</td>
-      <td>${match ? '<span class="ok">matches</span>' : '<span class="bad">MISMATCH</span>'}</td>
+      <td class="m">${Oname[g.oversight]}</td>
+      <td class="m">${g.evidence_tier}</td>
+      <td>${match ? '<span class="ok">match</span>' : '<span class="bad">MISMATCH</span>'}</td>
     </tr>`);
   });
   const el = document.getElementById("selftest");
+  const tx = document.getElementById("selftestText");
   if(pass === CORPUS.length){
     el.className = "banner pass";
-    el.textContent = `${pass} of ${CORPUS.length} scenarios match the suite. This page and the reference model agree.`;
+    tx.textContent = `corpus ${pass}/${CORPUS.length} match. this page agrees with the reference model`;
   } else {
     el.className = "banner fail";
-    el.textContent = `${pass} of ${CORPUS.length} match. This page disagrees with the suite and should not be trusted until that is resolved.`;
+    tx.textContent = `corpus ${pass}/${CORPUS.length} match. this page DISAGREES with the reference model and should not be trusted until resolved`;
   }
 }
 
@@ -352,11 +538,11 @@ function renderSector(name){
       <td><span class="tag">${esc(x.e)}</span></td>
       <td><span class="tag">${x.c}</span></td>
       <td>${pill(g.reversibility)}</td>
-      <td>${Oname[g.oversight]}</td>
+      <td class="m">${Oname[g.oversight]}</td>
       <td class="muted">${esc(x.why)}</td>
     </tr>`);
   });
-  document.querySelectorAll("#sectorTabs button").forEach(b => b.className = (b.textContent===name ? "primary" : ""));
+  document.querySelectorAll("#sectorTabs button").forEach(b => b.className = (b.textContent===name ? "on" : ""));
 }
 
 function record(g, extra){
@@ -383,7 +569,7 @@ document.getElementById("run").addEventListener("click", () => {
     obs = {binding:B[obsSel], ageDays: obsSel === "BOUND" ? parseInt(document.getElementById("age").value||"0",10) : null};
   }
   const g = gate(effect, consequence, obs, policy);
-  document.getElementById("record").textContent = record(g, {declared_effect: effect === null ? null : effect});
+  document.getElementById("record").textContent = record(g, {declared_effect: effect});
 });
 
 /* chain builder */
@@ -391,23 +577,28 @@ const steps = [];
 function renderSteps(){
   const host = document.getElementById("steps");
   host.innerHTML = "";
+  if(!steps.length){ host.innerHTML = '<p class="muted">no steps. gating an empty chain is itself a case: it fails closed to irreversible.</p>'; return; }
   steps.forEach((s, i) => {
     host.insertAdjacentHTML("beforeend", `<div class="step">
-      <div><label>Step ${i+1} declared effect</label>
+      <div><label>step ${i+1} declared effect</label>
         <select data-i="${i}" data-k="e">
           ${["read_only","recoverable_local","externally_recoverable","non_recoverable","externally_visible"].map(o=>`<option ${s.e===o?"selected":""}>${o}</option>`).join("")}
         </select></div>
-      <div><label>Consequence</label>
+      <div><label>consequence</label>
         <select data-i="${i}" data-k="c">${Cname.map(o=>`<option ${s.c===o?"selected":""}>${o}</option>`).join("")}</select></div>
-      <div><button data-rm="${i}">Remove</button></div>
+      <div><button data-stale="${i}" class="${s.stale?'on':''}">${s.stale?'stale':'bound'}</button></div>
+      <div><button data-rm="${i}">remove</button></div>
     </div>`);
   });
   host.querySelectorAll("select").forEach(sel => sel.addEventListener("change", e => {
     steps[+e.target.dataset.i][e.target.dataset.k] = e.target.value; }));
   host.querySelectorAll("button[data-rm]").forEach(b => b.addEventListener("click", e => {
     steps.splice(+e.target.dataset.rm,1); renderSteps(); }));
+  host.querySelectorAll("button[data-stale]").forEach(b => b.addEventListener("click", e => {
+    const i = +e.target.dataset.stale; steps[i].stale = !steps[i].stale; renderSteps(); }));
 }
 document.getElementById("addStep").addEventListener("click", () => { steps.push({e:"read_only", c:"LOW"}); renderSteps(); });
+document.getElementById("clearSteps").addEventListener("click", () => { steps.length = 0; renderSteps(); });
 document.getElementById("preset1").addEventListener("click", () => {
   steps.length = 0;
   steps.push({e:"read_only",c:"LOW"},{e:"recoverable_local",c:"LOW"},{e:"externally_recoverable",c:"HIGH"});
@@ -415,20 +606,111 @@ document.getElementById("preset1").addEventListener("click", () => {
 });
 document.getElementById("preset2").addEventListener("click", () => {
   steps.length = 0;
-  steps.push({e:"read_only",c:"LOW",stale:true},{e:"read_only",c:"LOW"},{e:"read_only",c:"LOW"});
+  steps.push({e:"read_only",c:"LOW"},{e:"read_only",c:"LOW",stale:true},{e:"read_only",c:"LOW"});
   renderSteps();
-  document.getElementById("chainRecord").textContent =
-    "Preset loaded. The second link is treated as stale when you gate it, which is what makes an all-read-only chain fail closed.";
 });
 document.getElementById("runChain").addEventListener("click", () => {
-  if(!steps.length){ document.getElementById("chainRecord").textContent = "Add at least one step. An empty chain has no established bound and fails closed to irreversible.";
+  if(!steps.length){
     const g = gateChain([], [], null, null);
-    document.getElementById("chainRecord").textContent += "\n\n" + record(g, {steps:0});
-    return; }
+    document.getElementById("chainRecord").textContent =
+      "empty chain: no established bound, so it fails closed.\n\n" + record(g, {steps:0});
+    return;
+  }
   const anyStale = steps.some(s => s.stale);
   const obs = anyStale ? steps.map(s => ({binding: s.stale ? B.STALE : B.BOUND, ageDays: 1})) : null;
   const g = gateChain(steps.map(s=>s.e), steps.map(s=>C[s.c]), obs, null);
-  document.getElementById("chainRecord").textContent = record(g, {steps: steps.map((s,i)=>({step:i+1, declared_effect:s.e, consequence:s.c}))});
+  document.getElementById("chainRecord").textContent = record(g, {steps: steps.map((s,i)=>({step:i+1, declared_effect:s.e, consequence:s.c, binding: anyStale ? (s.stale?"STALE":"BOUND") : undefined}))});
+});
+
+/* coverage panel */
+const COV_POLICY = {maxAgeDays:30};
+const COV_PRESETS = {
+  "mixed registry": [
+    {effect:"read_only", obs:{binding:B.BOUND, ageDays:1}},
+    {effect:"recoverable_local", obs:{binding:B.BOUND, ageDays:400}},
+    {effect:"externally_recoverable", obs:{binding:B.STALE, ageDays:null}},
+    {effect:"non_recoverable", obs:{binding:B.UNOBSERVED, ageDays:null}},
+    {effect:"quarantine_and_notify", obs:{binding:B.BOUND, ageDays:1}},
+    {effect:null, obs:{binding:B.BOUND, ageDays:1}},
+    {effect:"read_only", obs:null},
+    {effect:"externally_visible", obs:{binding:B.BOUND, ageDays:2}},
+  ],
+  "everything declared, nothing observed": [
+    {effect:"read_only", obs:{binding:B.UNOBSERVED, ageDays:null}},
+    {effect:"recoverable_local", obs:{binding:B.UNOBSERVED, ageDays:null}},
+    {effect:"externally_recoverable", obs:{binding:B.UNOBSERVED, ageDays:null}},
+    {effect:"non_recoverable", obs:{binding:B.UNOBSERVED, ageDays:null}},
+  ],
+  "well attested": [
+    {effect:"read_only", obs:{binding:B.BOUND, ageDays:2}},
+    {effect:"recoverable_local", obs:{binding:B.BOUND, ageDays:5}},
+    {effect:"externally_recoverable", obs:{binding:B.BOUND, ageDays:9}},
+    {effect:"non_recoverable", obs:{binding:B.BOUND, ageDays:12}},
+  ],
+  "aged out on the clock": [
+    {effect:"read_only", obs:{binding:B.BOUND, ageDays:31}},
+    {effect:"recoverable_local", obs:{binding:B.BOUND, ageDays:90}},
+    {effect:"externally_recoverable", obs:{binding:B.BOUND, ageDays:2}},
+    {effect:"non_recoverable", obs:{binding:B.BOUND, ageDays:400}},
+  ],
+};
+function renderCoverage(name){
+  const pop = COV_PRESETS[name];
+  const cov = coverage(pop, COV_POLICY);
+  document.getElementById("cDeclared").textContent = pct(cov.declared);
+  document.getElementById("cVerified").textContent = pct(cov.verified);
+  document.getElementById("cGap").textContent = pct(cov.binding_gap);
+  document.getElementById("bDeclared").style.width = pct(cov.declared);
+  document.getElementById("bVerified").style.width = pct(cov.verified);
+  document.getElementById("bGap").style.width = pct(cov.binding_gap);
+  const tb = document.querySelector("#covTable tbody");
+  tb.innerHTML = "";
+  pop.forEach(a => {
+    const known = recognisedEffect(a.effect);
+    const b = effectiveBinding(a.obs, COV_POLICY);
+    const use = declarationIsUsable(b);
+    const counts = !known ? "neither" : (use ? "declared + verified" : "declared only");
+    tb.insertAdjacentHTML("beforeend", `<tr>
+      <td><span class="tag">${a.effect === null ? "undeclared" : esc(a.effect)}</span></td>
+      <td class="m">${a.obs ? Bname[a.obs.binding] + (a.obs.ageDays!==null&&a.obs.ageDays!==undefined ? " / "+a.obs.ageDays+"d" : "") : "none"} <span class="muted">&rarr; ${Bname[b]}</span></td>
+      <td>${known ? '<span class="ok">yes</span>' : '<span class="bad">no</span>'}</td>
+      <td>${use ? '<span class="ok">yes</span>' : '<span class="bad">no</span>'}</td>
+      <td class="m">${counts}</td>
+    </tr>`);
+  });
+  document.querySelectorAll("#covPresets button").forEach(b => b.className = (b.textContent===name ? "on" : ""));
+}
+
+/* class flip */
+document.getElementById("runFlip").addEventListener("click", () => {
+  const from = document.getElementById("flipFrom").value;
+  const to = document.getElementById("flipTo").value;
+  const cons = C[document.getElementById("flipCons").value];
+  const s = supersede(from, to, "2026-08-04T00:00:00Z");
+  if(!s.flipped){
+    document.getElementById("flipRecord").textContent =
+      "no flip: the declared class is unchanged, so the prior observation still applies and nothing supersedes.";
+    return;
+  }
+  const before = gate(from, cons, {binding:B.BOUND, ageDays:1}, null);
+  const after  = gate(to, cons, s.observation, null);
+  document.getElementById("flipRecord").textContent = JSON.stringify({
+    event: s.event,
+    before_the_flip: {
+      declared_effect: from,
+      binding: "BOUND",
+      required_oversight: Oname[before.oversight],
+      reversibility: Rname[before.reversibility]
+    },
+    after_the_flip: {
+      declared_effect: to,
+      binding: Bname[s.observation.binding],
+      required_oversight: Oname[after.oversight],
+      reversibility: Rname[after.reversibility],
+      note: "the new declaration enters UNOBSERVED, not STALE, and fails closed until re-observed"
+    },
+    why_not_stale: "STALE means the contract mutated under an unchanged declaration. Here the declaration itself changed, so STALE would record a mutation that did not happen."
+  }, null, 2);
 });
 
 /* boot */
@@ -440,7 +722,15 @@ Object.keys(SECTORS).forEach(name => {
   document.getElementById("sectorTabs").appendChild(b);
 });
 renderSector(Object.keys(SECTORS)[0]);
+Object.keys(COV_PRESETS).forEach(name => {
+  const b = document.createElement("button");
+  b.textContent = name;
+  b.addEventListener("click", () => renderCoverage(name));
+  document.getElementById("covPresets").appendChild(b);
+});
+renderCoverage(Object.keys(COV_PRESETS)[0]);
 renderSteps();
+
 </script>
 </body>
 </html>
