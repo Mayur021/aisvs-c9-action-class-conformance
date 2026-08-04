@@ -18,7 +18,7 @@ Any link that resolves to fixed bytes works. A version DOI, a release asset, a p
 
 | Implementation | Suite release | Date | Result | Self-reported | Re-runnable | Artifact | SHA-256 |
 |---|---|---|---|---|---|---|---|
-| [Shango MID](https://doi.org/10.5281/zenodo.21759078) | v1.0.0 (`50d0571`) | 2026-08-02 | 12 / 14 matched · 1 divergence (recorded as an open research question) · 1 n/a · mechanism by case: 9 shipped, 4 adapter, 1 none| Yes | No, runner closed | `Shango_AISVS_C9_Scenario_Results_v1.0.0.pdf` | `86e2db073d20ed583b0ecb25ab27a16a4ac545251e5fff22ec7780c09a6437d1` |
+| [Shango MID](https://doi.org/10.5281/zenodo.21759078) | v1.0.0 (`50d0571`) | 2026-08-02 | 12 / 14 matched · 1 divergence (recorded as an open research question) · 1 n/a · mechanism by case: 9 shipped, 4 adapter, 1 none | Yes | No, runner closed | `Shango_AISVS_C9_Scenario_Results_v1.0.0.pdf` | `86e2db073d20ed583b0ecb25ab27a16a4ac545251e5fff22ec7780c09a6437d1` |
 
 **Result** carries separate counts rather than a single ratio: how many cases matched, how many diverged, and how many could not be evaluated. A case with no mechanism to exercise it has not failed, and a ratio settles that question silently by putting it in the numerator or the denominator. The row is the part that gets quoted, so a distinction the per-case rows preserve is lost at exactly the point it travels furthest.
 
