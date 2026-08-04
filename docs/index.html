@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Reversibility-Graded Action-Class Authority</title>
+<title>Action-Class Gate Lab, AISVS C9 reference</title>
 <style>
   :root{
     --ground:#ECF1F5;--panel:#FFFFFF;--panel2:#F4F8FB;--line:#D8E1EA;
@@ -13,399 +13,434 @@
     --ok:#2E9E6C;--block:#CD4743;
     --shadow:0 1px 2px rgba(18,32,45,.06),0 8px 22px rgba(18,32,45,.07);
     --font-sans:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-    --font-mono:ui-monospace,"SF Mono","JetBrains Mono",Menlo,Consolas,monospace;
+    --font-mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
   }
-  @media(prefers-color-scheme:dark){:root{
-    --ground:#0D131B;--panel:#141D27;--panel2:#19232F;--line:#26333F;
-    --ink:#E6EDF3;--dim:#8B9AA8;--faint:#677684;--accent:#38C6D0;
-    --c0:#43C48C;--c1:#5DA2EF;--c2:#E3AE47;--c3:#E86460;--ok:#43C48C;--block:#E86460;
-    --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 28px rgba(0,0,0,.4);
-  }}
-  :root[data-theme="light"]{--ground:#ECF1F5;--panel:#FFFFFF;--panel2:#F4F8FB;--line:#D8E1EA;--ink:#14202B;--dim:#5A6975;--faint:#8493A0;--accent:#0B8E99;--c0:#2E9E6C;--c1:#3B7DCE;--c2:#BE8214;--c3:#CD4743;--ok:#2E9E6C;--block:#CD4743;--shadow:0 1px 2px rgba(18,32,45,.06),0 8px 22px rgba(18,32,45,.07)}
-  :root[data-theme="dark"]{--ground:#0D131B;--panel:#141D27;--panel2:#19232F;--line:#26333F;--ink:#E6EDF3;--dim:#8B9AA8;--faint:#677684;--accent:#38C6D0;--c0:#43C48C;--c1:#5DA2EF;--c2:#E3AE47;--c3:#E86460;--ok:#43C48C;--block:#E86460;--shadow:0 1px 2px rgba(0,0,0,.3),0 10px 28px rgba(0,0,0,.4)}
   *{box-sizing:border-box}
-  body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--font-sans);line-height:1.5;-webkit-font-smoothing:antialiased}
-  .wrap{max-width:920px;margin:0 auto;padding:32px 20px 56px}
+  body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--font-sans);line-height:1.55;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1080px;margin:0 auto;padding:32px 20px 72px}
+  h1{font-size:1.6rem;margin:0 0 6px;letter-spacing:-.01em}
+  h2{font-size:1.15rem;margin:0 0 4px;letter-spacing:-.01em}
+  h3{font-size:.95rem;margin:0 0 8px}
+  p{margin:0 0 12px}
+  .sub{color:var(--dim);margin:0 0 20px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px;margin:0 0 20px;box-shadow:var(--shadow)}
+  .note{background:var(--panel2);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:8px;padding:12px 14px;color:var(--dim);font-size:.87rem;margin:0 0 18px}
+  .grid{display:grid;gap:14px}
+  @media(min-width:760px){.grid.two{grid-template-columns:1fr 1fr}}
+  label{display:block;font-size:.8rem;color:var(--dim);margin:0 0 4px;font-weight:600}
+  select,input[type=number]{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--ink);font-family:var(--font-sans);font-size:.9rem}
+  button{border:1px solid var(--line);background:var(--panel);color:var(--ink);padding:8px 14px;border-radius:8px;font-family:var(--font-sans);font-size:.87rem;cursor:pointer}
+  button:hover{border-color:var(--accent);color:var(--accent)}
+  button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+  button.primary:hover{opacity:.9;color:#fff}
+  .pill{display:inline-block;padding:2px 9px;border-radius:999px;font-size:.74rem;font-weight:700;letter-spacing:.02em;color:#fff;white-space:nowrap}
+  .r0{background:var(--c0)}.r1{background:var(--c1)}.r2{background:var(--c2)}.r3{background:var(--c3)}
+  .tag{display:inline-block;padding:2px 8px;border-radius:6px;font-size:.74rem;background:var(--panel2);border:1px solid var(--line);color:var(--dim);font-family:var(--font-mono)}
+  table{width:100%;border-collapse:collapse;font-size:.86rem}
+  th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--dim);font-size:.76rem;text-transform:uppercase;letter-spacing:.04em;font-weight:700}
+  .scroll{overflow-x:auto}
+  code,pre{font-family:var(--font-mono);font-size:.82rem}
+  pre{background:#14202B;color:#DCE6ED;padding:14px;border-radius:8px;overflow-x:auto;margin:0}
+  .ok{color:var(--ok);font-weight:700}
+  .bad{color:var(--block);font-weight:700}
+  .banner{border-radius:12px;padding:14px 18px;margin:0 0 20px;font-weight:600;border:1px solid}
+  .banner.pass{background:#EAF7F0;border-color:#B8E2CC;color:#1D6E4C}
+  .banner.fail{background:#FBECEC;border-color:#F0C4C3;color:#8E2F2C}
+  .muted{color:var(--faint);font-size:.8rem}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  details{border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin:0 0 8px;background:var(--panel2)}
+  summary{cursor:pointer;font-size:.88rem;font-weight:600}
+  .steps{display:flex;flex-direction:column;gap:8px;margin:0 0 12px}
+  .step{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;align-items:end}
+  footer{color:var(--faint);font-size:.8rem;border-top:1px solid var(--line);padding-top:18px;margin-top:8px}
   a{color:var(--accent)}
-  .eyebrow{font-family:var(--font-mono);font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--accent);font-weight:600}
-  h1{font-size:clamp(23px,3.2vw,30px);margin:.3em 0 .12em;font-weight:650;letter-spacing:-.01em;text-wrap:balance}
-  .lede{color:var(--dim);max-width:64ch;margin:0;font-size:14.5px}
-  .head-row{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;flex-wrap:wrap}
-  .repo{font-family:var(--font-mono);font-size:11.5px;color:var(--dim);border:1px solid var(--line);border-radius:7px;padding:6px 10px;text-decoration:none;white-space:nowrap}
-  .overview{margin-top:22px;background:var(--panel2);border:1px solid var(--line);border-radius:13px;padding:18px}
-  .ov-label{font-family:var(--font-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);font-weight:600;margin:0 0 13px}
-  .ovflow{display:flex;align-items:stretch;gap:8px;flex-wrap:wrap}
-  .ovstep{flex:1 1 150px;background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:11px 12px;display:flex;flex-direction:column;gap:3px}
-  .ovn{font-family:var(--font-mono);font-size:10px;color:var(--accent);font-weight:700;letter-spacing:.05em}
-  .ovt{font-size:13.5px;font-weight:650}
-  .ovd{font-size:11.5px;color:var(--dim);line-height:1.4}
-  .ovar{align-self:center;color:var(--faint);font-family:var(--font-mono);font-size:13px}
-  @media(max-width:640px){.ovar{display:none}}
-  .ov-note{font-size:12.5px;color:var(--dim);margin:14px 0 0}
-  .ov-note b{color:var(--ink)}
-
-  .picker{margin-top:22px;display:flex;align-items:center;gap:11px;flex-wrap:wrap}
-  .picker label{font-family:var(--font-mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);font-weight:600}
-  select{font:inherit;font-size:14px;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:9px 12px;min-width:280px;box-shadow:var(--shadow);cursor:pointer}
-  select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-
-  .rail{display:flex;gap:6px;margin:20px 0 0;flex-wrap:wrap}
-  .rail button{flex:1 1 120px;font:inherit;cursor:pointer;text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:9px 11px;transition:border-color .12s,background .12s}
-  .rail button:hover{border-color:var(--faint)}
-  .rail button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-  .rail button[aria-current="true"]{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 9%,var(--panel))}
-  .rail .n{font-family:var(--font-mono);font-size:10px;color:var(--faint);font-weight:700;letter-spacing:.05em}
-  .rail .s{font-size:12px;font-weight:600;margin-top:3px;display:block}
-  .rail button[aria-current="true"] .n{color:var(--accent)}
-
-  .stage{margin-top:16px;background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:24px;min-height:250px;position:relative;overflow:hidden}
-  .stage .stripe{position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--sc,var(--accent))}
-  .st-eyebrow{font-family:var(--font-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);font-weight:600}
-  .st-h{font-size:20px;font-weight:640;margin:8px 0 4px;letter-spacing:-.01em;text-wrap:balance}
-  .st-ctx{color:var(--dim);font-size:14px;max-width:66ch}
-  .kv{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0 0}
-  .pill{font-family:var(--font-mono);font-size:12px;font-weight:700;letter-spacing:.03em;padding:6px 12px;border-radius:20px;color:var(--pc);background:color-mix(in srgb,var(--pc) 14%,transparent);border:1px solid color-mix(in srgb,var(--pc) 38%,transparent)}
-  .why{margin:14px 0 0;font-size:13.5px;color:var(--dim);line-height:1.55;max-width:66ch}
-  .why b,.st-ctx b{color:var(--ink)}
-  .row2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:18px}
-  @media(max-width:620px){.row2{grid-template-columns:1fr}}
-  .mini{border:1px solid var(--line);border-radius:11px;padding:14px;background:var(--panel2)}
-  .mini .lab{font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);font-weight:600}
-  .mini .big{font-size:16px;font-weight:640;margin-top:5px}
-  .bars{display:flex;gap:4px;margin-top:9px}
-  .seg{height:8px;flex:1;border-radius:3px;background:var(--line)}
-  .seg.on{background:var(--sc)}
-  .evrow{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:2px}
-  .evrow .t{font-family:var(--font-mono);font-size:12px}
-  .evchips{display:flex;gap:5px;margin-top:10px;flex-wrap:wrap}
-  .evchip{font:inherit;font-family:var(--font-mono);font-size:11px;cursor:pointer;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:7px;padding:5px 9px;transition:border-color .12s,background .12s}
-  .evchip:hover{border-color:var(--faint)}
-  .evchip[aria-pressed="true"]{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 13%,var(--panel));font-weight:700;color:var(--accent)}
-  .evchip:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-
-  .decision{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:2px}
-  .verdict-big{font-size:clamp(26px,4.5vw,36px);font-weight:700;letter-spacing:-.01em;color:var(--dc)}
-  .vtag{font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:.06em;padding:5px 11px;border-radius:20px;color:var(--dc);background:color-mix(in srgb,var(--dc) 15%,transparent);border:1px solid color-mix(in srgb,var(--dc) 40%,transparent)}
-  .outcome{margin-top:15px;font-size:14px;color:var(--ink);max-width:66ch;line-height:1.55}
-  .nav{display:flex;justify-content:space-between;gap:10px;margin-top:16px}
-  .nav button{font:inherit;font-size:13.5px;font-weight:600;cursor:pointer;border-radius:9px;padding:10px 18px;border:1px solid var(--line);background:var(--panel);color:var(--ink);box-shadow:var(--shadow)}
-  .nav button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
-  .nav button:disabled{opacity:.4;cursor:default;box-shadow:none}
-  .nav button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-
-  .ref{margin-top:30px;border-top:1px solid var(--line);padding-top:20px}
-  .ref .sect-label{font-family:var(--font-mono);font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--faint);font-weight:600;margin:0 0 11px}
-  .ladder{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
-  @media(max-width:620px){.ladder{grid-template-columns:1fr 1fr}}
-  .rung{padding:12px;border:1px solid var(--line);background:var(--panel);border-radius:10px;border-top:3px solid var(--rc);box-shadow:var(--shadow)}
-  .rung .id{font-family:var(--font-mono);font-size:10px;color:var(--rc);font-weight:700}
-  .rung .nm{font-size:13.5px;font-weight:620;margin:4px 0 3px}
-  .rung .df{font-size:11.5px;color:var(--dim);line-height:1.4}
-  .classifier{margin-top:30px;border-top:1px solid var(--line);padding-top:22px}
-  .sect-label{font-family:var(--font-mono);font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--faint);font-weight:600;margin:0 0 8px}
-  .cl-intro{font-size:13.5px;color:var(--dim);max-width:66ch;margin:0 0 16px}
-  .cl-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-  @media(max-width:680px){.cl-grid{grid-template-columns:1fr}}
-  .cl-form{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;box-shadow:var(--shadow)}
-  .cl-form label{display:block;font-family:var(--font-mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);font-weight:600;margin:0 0 7px}
-  .cl-form label:not(:first-child){margin-top:16px}
-  .cl-form input{width:100%;font:inherit;font-size:13.5px;color:var(--ink);background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:9px 11px}
-  .cl-form input:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
-  .cl-opts{display:flex;flex-direction:column;gap:6px}
-  #clCons{flex-direction:row;flex-wrap:wrap}
-  .clopt{font:inherit;font-size:12.5px;text-align:left;cursor:pointer;border:1px solid var(--line);background:var(--panel2);color:var(--ink);border-radius:8px;padding:8px 11px;display:flex;align-items:center;gap:8px;transition:border-color .12s,background .12s}
-  .clopt:hover{border-color:var(--faint)}
-  .clopt[aria-pressed="true"]{border-color:var(--cc,var(--accent));background:color-mix(in srgb,var(--cc,var(--accent)) 11%,var(--panel));font-weight:600}
-  .clopt:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
-  .clopt .dot{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
-  .cl-out{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:16px}
-  .clo-head{display:flex;gap:8px;flex-wrap:wrap}
-  .jsonwrap{position:relative;margin-top:14px}
-  .copybtn{position:absolute;top:8px;right:8px;font:inherit;font-family:var(--font-mono);font-size:11px;cursor:pointer;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:6px;padding:4px 9px}
-  .copybtn:hover{border-color:var(--accent);color:var(--accent)}
-  .copybtn:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
-  .json{font-family:var(--font-mono);font-size:11.5px;line-height:1.5;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:13px 14px;overflow-x:auto;margin:0;white-space:pre}
-  .cl-lib{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
-  @media(max-width:680px){.cl-lib{grid-template-columns:1fr 1fr}}
-  @media(max-width:460px){.cl-lib{grid-template-columns:1fr}}
-  .libitem{font:inherit;font-size:12px;text-align:left;cursor:pointer;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;padding:8px 10px;transition:border-color .12s}
-  .libitem:hover{border-color:var(--accent)}
-  .libitem:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
-  footer{margin-top:26px;color:var(--faint);font-size:12px;display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap}
-  footer .map{font-family:var(--font-mono)}
-  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <header class="head-row">
-    <div>
-      <div class="eyebrow">Reference model &middot; OWASP AISVS C9</div>
-      <h1>Take one action through the gate</h1>
-      <p class="lede">Pick a use case, then walk it stage by stage. The gate decides whether it proceeds or is blocked, from how hard the action is to undo, how much it affects, and whether the evidence meets that bar.</p>
-    </div>
-    <a class="repo" href="https://github.com/Mayur021/aisvs-c9-action-class-conformance" target="_blank" rel="noopener">github.com/Mayur021/&#8203;aisvs-c9-action-class-conformance &#8599;</a>
-  </header>
 
-  <section class="overview">
-    <p class="ov-label">How the gate works &mdash; five stages</p>
-    <div class="ovflow">
-      <div class="ovstep"><span class="ovn">01</span><span class="ovt">Request</span><span class="ovd">The action an agent proposes to take, in context.</span></div>
-      <div class="ovar">&rarr;</div>
-      <div class="ovstep"><span class="ovn">02</span><span class="ovt">Classify</span><span class="ovd">Its reversibility class and its consequence, two separate axes.</span></div>
-      <div class="ovar">&rarr;</div>
-      <div class="ovstep"><span class="ovn">03</span><span class="ovt">Required gate</span><span class="ovd">The oversight and evidence the stricter axis demands.</span></div>
-      <div class="ovar">&rarr;</div>
-      <div class="ovstep"><span class="ovn">04</span><span class="ovt">Evidence</span><span class="ovd">Does what is provided meet that bar? Adjust it and see.</span></div>
-      <div class="ovar">&rarr;</div>
-      <div class="ovstep"><span class="ovn">05</span><span class="ovt">Decision</span><span class="ovd">Proceed, or blocked, enforced outside the model.</span></div>
-    </div>
-    <p class="ov-note">Then walk any of <b>16 real situations</b> across AI SOC, DFIR, pipeline, cloud, OT/ICS, finance, identity, agentic and control-plane domains. Pick one below and step through it.</p>
-  </section>
+<h1>Action-Class Gate Lab</h1>
+<p class="sub">Run an action through the reversibility-graded gate and watch what it decides, in the browser. Nothing is sent anywhere.</p>
 
-  <div class="picker">
-    <label for="uc">Use case</label>
-    <select id="uc"></select>
-  </div>
-
-  <nav class="rail" id="rail" aria-label="Stages"></nav>
-  <div class="stage" id="stage"><span class="stripe"></span></div>
-  <div class="nav">
-    <button id="back">&larr; Back</button>
-    <button id="next" class="primary">Next &rarr;</button>
-  </div>
-
-  <section class="classifier">
-    <p class="sect-label">Classify your own action</p>
-    <p class="cl-intro">Declare what the action does, not what you hope it does. Pick its effect and its consequence, and get the class, the gate, and a JSON record you can drop into your policy or audit trail. The class is computed from the declared effect, never guessed.</p>
-    <div class="cl-grid">
-      <div class="cl-form">
-        <label for="clName">Action</label>
-        <input id="clName" type="text" placeholder="e.g. Merge release branch to main">
-        <label>Declared effect</label>
-        <div class="cl-opts" id="clEffect"></div>
-        <label>Consequence</label>
-        <div class="cl-opts" id="clCons"></div>
-      </div>
-      <div class="cl-out" id="clOut"></div>
-    </div>
-  </section>
-
-  <div class="ref">
-    <p class="sect-label">The four-class ladder</p>
-    <div class="ladder" id="ladder"></div>
-  </div>
-
-  <footer>
-    <span>The domain never sets the gate. The reversibility of the specific action does.</span>
-    <span class="map">C9.2.3 &middot; C9.2.4 &middot; C9.2.10 &middot; C9.5.3</span>
-  </footer>
+<div class="note">
+  <strong>This is the reference, not a product.</strong> It implements the same model as
+  <code>reversibility/model.py</code>, <code>chain.py</code> and <code>observation.py</code> in the conformance
+  repository, so it grades identically to the suite. It is not a candidate for the results index: it is the thing
+  rows in that index are compared against. No real systems, credentials or data touch it, and there is no server.
 </div>
 
+<div id="selftest" class="banner">Running the corpus…</div>
+
+<div class="card">
+  <h2>1. Conformance corpus</h2>
+  <p class="sub">The 13 scenarios the suite ships, executed here against the same model. Each states what the model
+  should return; a mismatch anywhere means this page and the suite disagree, and the banner above says so.</p>
+  <div class="scroll"><table id="corpus">
+    <thead><tr><th>Scenario</th><th>Input</th><th>Class</th><th>Oversight</th><th>Evidence</th><th>Expected</th></tr></thead>
+    <tbody></tbody>
+  </table></div>
+</div>
+
+<div class="card">
+  <h2>2. Sector walkthroughs</h2>
+  <p class="sub"><strong>Illustrative, not corpus.</strong> These are not part of the conformance suite and carry no
+  expected verdict. They exist to show the same four classes applied outside a lab, and they run through exactly the
+  same gate as section 1.</p>
+  <div class="row" style="margin-bottom:14px" id="sectorTabs"></div>
+  <div class="scroll"><table id="sector">
+    <thead><tr><th>Action</th><th>Declared effect</th><th>Consequence</th><th>Class</th><th>Oversight</th><th>Why this class</th></tr></thead>
+    <tbody></tbody>
+  </table></div>
+</div>
+
+<div class="card">
+  <h2>3. Take one action through the gate</h2>
+  <div class="grid two">
+    <div>
+      <label for="eff">Declared effect (from the tool registry)</label>
+      <select id="eff">
+        <option value="read_only">read_only</option>
+        <option value="recoverable_local">recoverable_local</option>
+        <option value="externally_recoverable">externally_recoverable</option>
+        <option value="non_recoverable">non_recoverable</option>
+        <option value="externally_visible">externally_visible</option>
+        <option value="__unknown__">something the registry does not define</option>
+        <option value="__null__">not declared at all</option>
+      </select>
+    </div>
+    <div>
+      <label for="cons">Consequence tier (independent axis)</label>
+      <select id="cons">
+        <option>LOW</option><option>MEDIUM</option><option>HIGH</option><option>CRITICAL</option>
+      </select>
+    </div>
+    <div>
+      <label for="obs">Observation layer</label>
+      <select id="obs">
+        <option value="none">none attached (declaration-only)</option>
+        <option value="BOUND">BOUND</option>
+        <option value="STALE">STALE</option>
+        <option value="UNOBSERVED">UNOBSERVED</option>
+      </select>
+    </div>
+    <div>
+      <label for="age">Observation age in days (BOUND only)</label>
+      <input id="age" type="number" min="0" value="1">
+    </div>
+    <div>
+      <label for="maxage">Staleness policy, max age in days (0 = never expires)</label>
+      <input id="maxage" type="number" min="0" value="0">
+    </div>
+    <div style="display:flex;align-items:end"><button class="primary" id="run">Run the gate</button></div>
+  </div>
+  <div style="margin-top:16px">
+    <h3>Decision record</h3>
+    <pre id="record">Press "Run the gate".</pre>
+  </div>
+</div>
+
+<div class="card">
+  <h2>4. Composed chain</h2>
+  <p class="sub">A sequence of individually mild steps can reach an outcome no single step shows. The chain is graded
+  at its worst reachable class from commencement, not step by step, and it is as stale as its stalest link.</p>
+  <div class="steps" id="steps"></div>
+  <div class="row" style="margin-bottom:14px">
+    <button id="addStep">Add step</button>
+    <button id="preset1">Preset: three mild steps, one external</button>
+    <button id="preset2">Preset: all read-only, one link stale</button>
+    <button class="primary" id="runChain">Gate the chain</button>
+  </div>
+  <pre id="chainRecord">Add steps, then gate the chain.</pre>
+</div>
+
+<footer>
+  Implements OWASP AISVS v1.0 C9.2.3, C9.2.4, C9.2.10 and C9.5.3 as expressed in the reference model.
+  Source of truth: <a href="https://github.com/Mayur021/aisvs-c9-action-class-conformance">Mayur021/aisvs-c9-action-class-conformance</a>, Apache-2.0.
+  Independent runs are indexed in RESULTS.md by link and digest; this page is not one of them.
+</footer>
+
+</div>
 <script>
-(function(){
-  const REV={
-    READ_ONLY:{i:0,label:"Read-only",def:"Observes state, changes nothing.",vc:"--c0"},
-    REVERSIBLE:{i:1,label:"Reversible",def:"Recoverable local state you can restore yourself.",vc:"--c1"},
-    EXTERNALLY_REVERSIBLE:{i:2,label:"Externally reversible",def:"Recoverable only by a party other than you.",vc:"--c2"},
-    IRREVERSIBLE:{i:3,label:"Irreversible",def:"Cannot be walked back once it runs.",vc:"--c3"}
-  };
-  const RORDER=["READ_ONLY","REVERSIBLE","EXTERNALLY_REVERSIBLE","IRREVERSIBLE"];
-  const CONS={LOW:0,MEDIUM:1,HIGH:2,CRITICAL:3};
-  const OVER=["proceed unattended","human on the loop","human approval required","a human owns the call"];
-  const EVID=["basic","standard","enhanced","highest"];
-  const VC=["--c0","--c1","--c2","--c3"];
-  const STAGES=["Request","Classify","Required gate","Evidence","Decision"];
+/* ---------- the model, ported 1:1 from reversibility/model.py ---------- */
+const R = {READ_ONLY:0, REVERSIBLE:1, EXTERNALLY_REVERSIBLE:2, IRREVERSIBLE:3};
+const C = {LOW:0, MEDIUM:1, HIGH:2, CRITICAL:3};
+const O = {UNATTENDED:0, SUPERVISED:1, APPROVAL_REQUIRED:2, HUMAN_OWNS:3};
+const B = {BOUND:0, STALE:1, UNOBSERVED:2};
+const Rname = ["READ_ONLY","REVERSIBLE","EXTERNALLY_REVERSIBLE","IRREVERSIBLE"];
+const Cname = ["LOW","MEDIUM","HIGH","CRITICAL"];
+const Oname = ["UNATTENDED","SUPERVISED","APPROVAL_REQUIRED","HUMAN_OWNS"];
+const Bname = ["BOUND","STALE","UNOBSERVED"];
+const EVIDENCE_TIER = ["basic","standard","enhanced","highest"];
 
-  // provided: index 0..3 evidence supplied. rev "UNCLASSIFIED" => fail closed.
-  const CASES=[
-    {d:"AI SOC · triage",a:"Read enriched alert telemetry",rev:"READ_ONLY",cons:"LOW",prov:0,
-     ctx:"During triage the SOC agent reads enriched alert context to summarise an incident. It queries and correlates, it changes nothing.",
-     rw:"A read changes no state, so there is nothing to undo.",cw:"Reading telemetry affects nothing operational.",
-     oa:"Runs unattended. Analysis on read-only data is where AI earns its keep.",ob:""},
-    {d:"AI SOC · response",a:"Quarantine a suspected-malicious file",rev:"REVERSIBLE",cons:"MEDIUM",prov:1,
-     ctx:"The agent moves a suspicious file into quarantine to stop it executing while triage continues.",
-     rw:"Reversible: the file can be restored from the quarantine store.",cw:"A false positive briefly removes a legitimate file.",
-     oa:"Proceeds with a human on the loop, and is restorable if wrong.",ob:""},
-    {d:"AI SOC · response",a:"Isolate a production host mid-incident",rev:"REVERSIBLE",cons:"HIGH",prov:1,
-     ctx:"The agent proposes to cut a production host off the network to contain a suspected intrusion.",
-     rw:"Reversible in principle: the host can be re-connected once cleared.",cw:"Isolating a production host can halt a live business service.",
-     oa:"Proceeds after approval, given the production impact.",ob:"Blocked and referred. Cutting a production host is high-consequence and carries only <b>standard</b> evidence, below the <b>enhanced</b> bar this action needs. Reversible does not mean unattended when the impact is this high."},
-    {d:"AI SOC · response",a:"Re-image a compromised endpoint",rev:"IRREVERSIBLE",cons:"HIGH",prov:2,
-     ctx:"The agent proposes to wipe and re-image a compromised laptop back to a known-good state.",
-     rw:"Irreversible: re-imaging destroys the on-disk state, including forensic evidence.",cw:"Loss of the machine's evidence and any unsaved work.",
-     oa:"Proceeds only under a named owner, after evidence has been preserved.",ob:"Blocked. Re-imaging destroys forensic evidence and cannot be undone, so it demands the <b>highest</b> tier, not <b>enhanced</b>. Image first, then wipe."},
-    {d:"DFIR · analysis",a:"Read-only analysis on a memory image",rev:"READ_ONLY",cons:"LOW",prov:0,
-     ctx:"The agent runs read-only analysis over an acquired memory image, working on a copy to surface artefacts.",
-     rw:"Analysis on a copy changes nothing on the original evidence.",cw:"No live system is touched.",
-     oa:"Runs unattended. Read-only analysis on an image is exactly where automation is safe.",ob:""},
-    {d:"DFIR · acquisition",a:"Live RAM acquisition on a running host",rev:"IRREVERSIBLE",cons:"HIGH",prov:1,
-     ctx:"The agent proposes to capture volatile memory from a live, running host during an incident.",
-     rw:"One-shot and irreversible: acquisition alters volatile state, and there is a single chance to get it right.",cw:"Get it wrong and the volatile evidence is gone for good.",
-     oa:"Proceeds only under a named owner who accepts the one-shot trade-off.",ob:"Blocked. A one-shot live acquisition on standard evidence is not enough; the decision belongs to a human with the highest assurance."},
-    {d:"DFIR · acquisition",a:"Pull power on a running encrypted host",rev:"IRREVERSIBLE",cons:"CRITICAL",prov:0,
-     ctx:"During response the agent proposes to pull power on a running, encrypted host.",
-     rw:"Irreversible and one-shot: the keys live in RAM, so power-off forecloses the acquisition window for good.",cw:"Permanent loss of volatile evidence and possibly the ability to decrypt.",
-     oa:"Proceeds only with a human owner who has weighed the one-shot trade-off.",ob:"Blocked. A one-shot irreversible acquisition cannot run on <b>basic</b> evidence; it belongs to a named human."},
-    {d:"Pipeline · SPVS",a:"Merge an AI-generated PR to main",rev:"EXTERNALLY_REVERSIBLE",cons:"HIGH",prov:1,
-     ctx:"A CI agent proposes to merge an AI-generated pull request into main, where downstream builds will pull it.",
-     rw:"Externally reversible: once merged and pulled, undoing it needs a revert and everyone re-pulling.",cw:"A bad merge can break many downstream builds and ship a flaw.",
-     oa:"Merges after a human approves the change.",ob:"Blocked. It carries only <b>standard</b> evidence, below the <b>enhanced</b> bar a merge to a shared branch requires. A passing partial scan is not authority to merge."},
-    {d:"Pipeline · SPVS",a:"Deploy the signed release to production",rev:"IRREVERSIBLE",cons:"CRITICAL",prov:3,
-     ctx:"The agent requests a production deployment of the signed release artefact.",
-     rw:"Irreversible once live and serving traffic.",cw:"Direct production and customer impact.",
-     oa:"Proceeds under a named human owner with full assurance.",ob:""},
-    {d:"Cloud · infra",a:"Delete a storage bucket flagged unused",rev:"IRREVERSIBLE",cons:"HIGH",prov:0,
-     ctx:"The agent proposes to delete a cloud storage bucket flagged as unused, with no retention configured.",
-     rw:"Irreversible: once deleted with no retention, the objects are gone.",cw:"Potential loss of data others still depend on.",
-     oa:"Proceeds under a named owner after confirming nothing depends on it.",ob:"Blocked. An irreversible deletion on <b>basic</b> evidence is exactly the case the gate exists for. Raise the assurance or route it to a human."},
-    {d:"Identity",a:"Rotate a service credential",rev:"REVERSIBLE",cons:"MEDIUM",prov:1,
-     ctx:"The agent rotates a service credential it can roll back from a stored prior version.",
-     rw:"Reversible: the previous credential can be restored.",cw:"A service could briefly fail to authenticate.",
-     oa:"Proceeds with a human on the loop, able to step in.",ob:""},
-    {d:"Finance · payments",a:"Release a vendor wire transfer",rev:"IRREVERSIBLE",cons:"CRITICAL",prov:3,
-     ctx:"A finance agent proposes to release a wire transfer to a vendor whose bank details changed this week.",
-     rw:"Irreversible: once settled, recovery depends entirely on the counterparty.",cw:"Direct financial loss, a classic business-email-compromise target.",
-     oa:"Proceeds only under a named human owner with the highest assurance.",ob:""},
-    {d:"OT / ICS",a:"Adjust a chemical dosing setpoint",rev:"REVERSIBLE",cons:"HIGH",prov:1,
-     ctx:"An OT agent proposes to change a chemical dosing setpoint on a plant line.",
-     rw:"Reversible in control terms: the setpoint can be changed back.",cw:"An out-of-range dose can affect product quality or safety.",
-     oa:"Proceeds after operator approval, given the process impact.",ob:"Blocked. A high-consequence process change carries only <b>standard</b> evidence, below the <b>enhanced</b> bar. Reversible is not unattended when the consequence is this high."},
-    {d:"Protocol · MCP",a:"Invoke an undeclared MCP tool",rev:"UNCLASSIFIED",cons:"HIGH",prov:2,
-     ctx:"An MCP connector exposes a tool whose effect the registry has not declared. The agent invokes it.",
-     rw:"The reversibility class cannot be established from a declared effect.",cw:"The call reaches an external system.",
-     oa:"",ob:"Blocked, fail-closed. An undeclared action defaults to the most restrictive class. A valid MCP session does not grant authority for an effect that was never classified."},
-    {d:"Agentic · multi-agent",a:"Delegate remediation to a sub-agent",rev:"EXTERNALLY_REVERSIBLE",cons:"HIGH",prov:2,
-     ctx:"The agent spawns a sub-agent and delegates a remediation task that will act on shared infrastructure.",
-     rw:"Externally reversible: effects the sub-agent commits may need another party to unwind.",cw:"Delegated reach across the chain amplifies the blast radius.",
-     oa:"Proceeds after approval. The chain is gated at its worst-case reachable class from the start, not step by step.",ob:""},
-    {d:"Control plane",a:"Disable a guardrail in the agent's own policy",rev:"IRREVERSIBLE",cons:"CRITICAL",prov:2,
-     ctx:"The agent proposes to switch off one of the guardrails in its own governance policy, the same policy that decides what it is allowed to do next.",
-     rw:"Irreversible in effect: removing the control that gates every later action means anything the agent does before it is restored runs ungated, and the platform itself is inside the threat model.",cw:"An agent that can weaken its own gate holds open-ended authority over everything it does downstream.",
-     oa:"Proceeds only as an operator-approved, signed, reversible change under a named human owner, never on the agent's own authority.",ob:"Blocked. A change to the control plane that governs the agent cannot run on the agent's own say-so, and it carries only <b>enhanced</b> evidence, below the <b>highest</b> bar. Separate the proposer from the approver: the agent proposes, the operator disposes."}
-  ];
+const DECLARED_EFFECT = {
+  read_only: R.READ_ONLY,
+  recoverable_local: R.REVERSIBLE,
+  externally_recoverable: R.EXTERNALLY_REVERSIBLE,
+  non_recoverable: R.IRREVERSIBLE,
+  externally_visible: R.IRREVERSIBLE,
+};
 
-  const state={c:0,s:0,prov:0};
-  const sel=document.getElementById("uc");
-  // group options by domain
-  let grp=null,og=null;
-  CASES.forEach((c,i)=>{
-    if(c.d!==grp){grp=c.d;og=document.createElement("optgroup");og.label=c.d;sel.appendChild(og);}
-    const o=document.createElement("option");o.value=i;o.textContent=c.a;og.appendChild(o);
+function classify(effect){
+  if(effect === null || effect === undefined) return R.IRREVERSIBLE;
+  return (effect in DECLARED_EFFECT) ? DECLARED_EFFECT[effect] : R.IRREVERSIBLE;
+}
+function recognisedEffect(effect){
+  return effect !== null && effect !== undefined && (effect in DECLARED_EFFECT);
+}
+function requiredOversight(r, c){ return Math.max(r, c); }
+
+/* observation.py */
+function effectiveBinding(obs, policy){
+  if(!obs) return B.UNOBSERVED;
+  if(obs.binding !== B.BOUND) return obs.binding;
+  if(!policy || policy.maxAgeDays === null || policy.maxAgeDays === undefined) return B.BOUND;
+  if(obs.ageDays === null || obs.ageDays === undefined) return B.UNOBSERVED;
+  return obs.ageDays <= policy.maxAgeDays ? B.BOUND : B.UNOBSERVED;
+}
+function declarationIsUsable(b){ return b === B.BOUND; }
+function chainBinding(bs){ return bs.length ? Math.max.apply(null, bs) : B.UNOBSERVED; }
+
+/* model.gate */
+function gate(effect, consequence, obs, policy){
+  let r = classify(effect);
+  const known = recognisedEffect(effect);
+  if(obs === undefined || obs === null){
+    const ov = requiredOversight(r, consequence);
+    const why = !known
+      ? "class undeclared or unrecognised, failed closed to irreversible"
+      : `reversibility=${Rname[r].toLowerCase()}, consequence=${Cname[consequence].toLowerCase()}, oversight is the worse of the two axes`;
+    return {reversibility:r, consequence, oversight:ov, evidence_tier:EVIDENCE_TIER[ov], rationale:why, binding:null, mode:"declaration-only"};
+  }
+  const b = effectiveBinding(obs, policy);
+  let why;
+  if(!declarationIsUsable(b)){
+    r = R.IRREVERSIBLE;
+    why = `declaration not usable: binding=${Bname[b].toLowerCase()}, failed closed to irreversible`;
+  } else if(!known){
+    why = "class undeclared or unrecognised, failed closed to irreversible";
+  } else {
+    why = `reversibility=${Rname[r].toLowerCase()}, consequence=${Cname[consequence].toLowerCase()}, binding=${Bname[b].toLowerCase()}, oversight is the worse of the two axes`;
+  }
+  const ov = requiredOversight(r, consequence);
+  return {reversibility:r, consequence, oversight:ov, evidence_tier:EVIDENCE_TIER[ov], rationale:why, binding:b, mode:"declaration+observation"};
+}
+
+/* chain.py */
+function chainReversibility(classes){ return classes.length ? Math.max.apply(null, classes) : R.IRREVERSIBLE; }
+function gateChain(effects, consequences, observations, policy){
+  const stepClasses = effects.map(classify);
+  let r = chainReversibility(stepClasses);
+  const c = (consequences && consequences.length) ? Math.max.apply(null, consequences) : C.LOW;
+  if(observations === undefined || observations === null){
+    const ov = requiredOversight(r, c);
+    return {reversibility:r, consequence:c, oversight:ov, evidence_tier:EVIDENCE_TIER[ov],
+      rationale:`worst-case across ${stepClasses.length} steps: reversibility=${Rname[r].toLowerCase()}, gated at commencement`,
+      binding:null, mode:"declaration-only"};
+  }
+  const b = chainBinding(observations.map(o => effectiveBinding(o, policy)));
+  let why;
+  if(!declarationIsUsable(b)){
+    r = R.IRREVERSIBLE;
+    why = `worst-case across ${stepClasses.length} steps, stalest link binding=${Bname[b].toLowerCase()}: declarations not usable, failed closed`;
+  } else {
+    why = `worst-case across ${stepClasses.length} steps: reversibility=${Rname[r].toLowerCase()}, binding=${Bname[b].toLowerCase()}, gated at commencement`;
+  }
+  const ov = requiredOversight(r, c);
+  return {reversibility:r, consequence:c, oversight:ov, evidence_tier:EVIDENCE_TIER[ov], rationale:why, binding:b, mode:"declaration+observation"};
+}
+
+/* ---------- the 13 scenarios the suite ships ---------- */
+const CORPUS = [
+ {id:"read_only_report", effect:"read_only", consequence:"LOW", expect:{reversibility:"READ_ONLY",oversight:"UNATTENDED",evidence_tier:"basic"}},
+ {id:"local_config_edit", effect:"recoverable_local", consequence:"MEDIUM", expect:{reversibility:"REVERSIBLE",oversight:"SUPERVISED",evidence_tier:"standard"}},
+ {id:"merge_to_shared_branch", effect:"externally_recoverable", consequence:"HIGH", expect:{reversibility:"EXTERNALLY_REVERSIBLE",oversight:"APPROVAL_REQUIRED",evidence_tier:"enhanced"}},
+ {id:"production_external_release", effect:"non_recoverable", consequence:"CRITICAL", expect:{reversibility:"IRREVERSIBLE",oversight:"HUMAN_OWNS",evidence_tier:"highest"}},
+ {id:"unclassified_action_fails_closed", effect:null, consequence:"LOW", expect:{reversibility:"IRREVERSIBLE",oversight:"HUMAN_OWNS",evidence_tier:"highest"}},
+ {id:"low_consequence_but_irreversible", effect:"non_recoverable", consequence:"LOW", expect:{reversibility:"IRREVERSIBLE",oversight:"HUMAN_OWNS",evidence_tier:"highest"}},
+ {id:"high_consequence_but_reversible", effect:"recoverable_local", consequence:"HIGH", expect:{reversibility:"REVERSIBLE",oversight:"APPROVAL_REQUIRED",evidence_tier:"enhanced"}},
+ {id:"composed_chain_worst_case", chain:{effects:["read_only","recoverable_local","externally_recoverable"], consequences:["LOW","LOW","HIGH"]}, expect:{reversibility:"EXTERNALLY_REVERSIBLE",oversight:"APPROVAL_REQUIRED",evidence_tier:"enhanced"}},
+ {id:"bound_declaration_is_honoured", effect:"recoverable_local", consequence:"MEDIUM", observation:{binding:"BOUND",age_days:1}, expect:{reversibility:"REVERSIBLE",oversight:"SUPERVISED",evidence_tier:"standard"}},
+ {id:"stale_declaration_fails_closed", effect:"read_only", consequence:"LOW", observation:{binding:"STALE"}, expect:{reversibility:"IRREVERSIBLE",oversight:"HUMAN_OWNS",evidence_tier:"highest"}},
+ {id:"unobserved_is_not_agreement", effect:"read_only", consequence:"LOW", observation:{binding:"UNOBSERVED"}, expect:{reversibility:"IRREVERSIBLE",oversight:"HUMAN_OWNS",evidence_tier:"highest"}},
+ {id:"bound_but_expired_ages_out", effect:"read_only", consequence:"LOW", observation:{binding:"BOUND",age_days:400}, policy:{max_age_days:30}, expect:{reversibility:"IRREVERSIBLE",oversight:"HUMAN_OWNS",evidence_tier:"highest"}},
+ {id:"chain_is_as_stale_as_its_stalest_link", chain:{effects:["read_only","read_only","read_only"], consequences:["LOW","LOW","LOW"], observations:[{binding:"BOUND",age_days:1},{binding:"STALE"},{binding:"BOUND",age_days:1}]}, expect:{reversibility:"IRREVERSIBLE",oversight:"HUMAN_OWNS",evidence_tier:"highest"}},
+];
+
+function obsFrom(o){ return o ? {binding:B[o.binding], ageDays:(o.age_days===undefined?null:o.age_days)} : null; }
+function policyFrom(p){ return p ? {maxAgeDays:p.max_age_days} : null; }
+
+function runScenario(s){
+  if(s.chain){
+    const eff = s.chain.effects;
+    const cons = (s.chain.consequences||[]).map(x => C[x]);
+    const obs = s.chain.observations ? s.chain.observations.map(obsFrom) : null;
+    return gateChain(eff, cons, obs, policyFrom(s.policy));
+  }
+  return gate(s.effect, C[s.consequence], s.observation ? obsFrom(s.observation) : null, policyFrom(s.policy));
+}
+
+/* ---------- sector walkthroughs: illustrative, NOT corpus ---------- */
+const SECTORS = {
+ "OT / ICS": [
+  {a:"Read a Modbus holding register", e:"read_only", c:"LOW", why:"Observes process state, changes nothing."},
+  {a:"Write a setpoint inside its permitted band", e:"recoverable_local", c:"MEDIUM", why:"The previous setpoint can be restored by the same operator."},
+  {a:"Download revised ladder logic to a PLC", e:"non_recoverable", c:"HIGH", why:"The prior program is not recoverable from the controller once overwritten."},
+  {a:"Issue a breaker trip command", e:"non_recoverable", c:"CRITICAL", why:"The physical event has already happened; re-closing is a new action, not an undo."},
+ ],
+ "BFSI": [
+  {a:"Query an account balance", e:"read_only", c:"LOW", why:"No state changes."},
+  {a:"Reverse an internal ledger entry", e:"recoverable_local", c:"MEDIUM", why:"Both sides of the entry are inside the same book."},
+  {a:"Release an outbound payment to an external beneficiary", e:"externally_recoverable", c:"HIGH", why:"Recovery exists but belongs to the beneficiary bank and the beneficiary."},
+  {a:"File a regulatory return to the supervisor", e:"externally_visible", c:"MEDIUM", why:"Once filed it is on the record. A correction is a second filing, not a retraction."},
+ ],
+ "Healthcare": [
+  {a:"View a patient record", e:"read_only", c:"LOW", why:"Read. Access is logged; nothing changes."},
+  {a:"Amend an unsigned draft note", e:"recoverable_local", c:"MEDIUM", why:"The draft is still the author's to change."},
+  {a:"Transmit records to an external provider", e:"externally_recoverable", c:"HIGH", why:"The receiving provider now holds a copy and controls its deletion."},
+  {a:"Issue an electronic prescription", e:"non_recoverable", c:"HIGH", why:"Cancellation does not un-dispense."},
+ ],
+ "SOC / IR": [
+  {a:"Enrich an alert with threat intelligence", e:"read_only", c:"LOW", why:"Analysis only."},
+  {a:"Isolate a host from the network", e:"recoverable_local", c:"HIGH", why:"Reversible by the same team, but high blast radius lifts the gate on the second axis."},
+  {a:"Disable a user account across the estate", e:"recoverable_local", c:"HIGH", why:"Re-enabling is available to the same team."},
+  {a:"Notify the regulator inside the statutory reporting window", e:"externally_visible", c:"LOW", why:"Low technical impact and completely unrecoverable. This is the case a sensitivity-keyed policy auto-approves."},
+ ],
+};
+
+/* ---------- rendering ---------- */
+function pill(r){ return `<span class="pill r${r}">${Rname[r]}</span>`; }
+function esc(s){ return String(s).replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[m])); }
+
+function renderCorpus(){
+  const tb = document.querySelector("#corpus tbody");
+  let pass = 0;
+  CORPUS.forEach(s => {
+    const g = runScenario(s);
+    const got = {reversibility:Rname[g.reversibility], oversight:Oname[g.oversight], evidence_tier:g.evidence_tier};
+    const match = got.reversibility===s.expect.reversibility && got.oversight===s.expect.oversight && got.evidence_tier===s.expect.evidence_tier;
+    if(match) pass++;
+    const input = s.chain
+      ? `chain of ${s.chain.effects.length}: <span class="tag">${s.chain.effects.join(" → ")}</span>${s.chain.observations?'<br><span class="muted">one link stale</span>':''}`
+      : `<span class="tag">${s.effect === null ? "not declared" : esc(s.effect)}</span> <span class="tag">${s.consequence}</span>${s.observation?` <span class="tag">${s.observation.binding}</span>`:""}`;
+    tb.insertAdjacentHTML("beforeend", `<tr>
+      <td><strong>${esc(s.id)}</strong></td>
+      <td>${input}</td>
+      <td>${pill(g.reversibility)}</td>
+      <td>${Oname[g.oversight]}</td>
+      <td>${g.evidence_tier}</td>
+      <td>${match ? '<span class="ok">matches</span>' : '<span class="bad">MISMATCH</span>'}</td>
+    </tr>`);
   });
-  sel.onchange=()=>{state.c=+sel.value;state.s=0;state.prov=CASES[state.c].prov;render();loadCase(state.c);};
+  const el = document.getElementById("selftest");
+  if(pass === CORPUS.length){
+    el.className = "banner pass";
+    el.textContent = `${pass} of ${CORPUS.length} scenarios match the suite. This page and the reference model agree.`;
+  } else {
+    el.className = "banner fail";
+    el.textContent = `${pass} of ${CORPUS.length} match. This page disagrees with the suite and should not be trusted until that is resolved.`;
+  }
+}
 
-  const rail=document.getElementById("rail");
-  STAGES.forEach((s,i)=>{
-    const b=document.createElement("button");b.innerHTML='<span class="n">0'+(i+1)+'</span><span class="s">'+s+'</span>';
-    b.onclick=()=>{state.s=i;render();};rail.appendChild(b);
+function renderSector(name){
+  const tb = document.querySelector("#sector tbody");
+  tb.innerHTML = "";
+  SECTORS[name].forEach(x => {
+    const g = gate(x.e, C[x.c], null, null);
+    tb.insertAdjacentHTML("beforeend", `<tr>
+      <td>${esc(x.a)}</td>
+      <td><span class="tag">${esc(x.e)}</span></td>
+      <td><span class="tag">${x.c}</span></td>
+      <td>${pill(g.reversibility)}</td>
+      <td>${Oname[g.oversight]}</td>
+      <td class="muted">${esc(x.why)}</td>
+    </tr>`);
   });
+  document.querySelectorAll("#sectorTabs button").forEach(b => b.className = (b.textContent===name ? "primary" : ""));
+}
 
-  const ladder=document.getElementById("ladder");
-  RORDER.forEach(k=>{const d=document.createElement("div");d.className="rung";d.style.setProperty("--rc","var("+REV[k].vc+")");
-    d.innerHTML='<div class="id">'+k.replace(/_/g," ").toLowerCase()+'</div><div class="nm">'+REV[k].label+'</div><div class="df">'+REV[k].def+'</div>';ladder.appendChild(d);});
+function record(g, extra){
+  return JSON.stringify(Object.assign({
+    reversibility: Rname[g.reversibility],
+    consequence: Cname[g.consequence],
+    required_oversight: Oname[g.oversight],
+    evidence_tier: g.evidence_tier,
+    binding: g.binding === null ? null : Bname[g.binding],
+    mode: g.mode,
+    rationale: g.rationale
+  }, extra||{}), null, 2);
+}
 
-  function compute(c){
-    const uncl=c.rev==="UNCLASSIFIED";
-    const r=uncl?3:REV[c.rev].i, con=CONS[c.cons], req=Math.max(r,con);
-    const allowed=!uncl && state.prov>=req;
-    return {uncl,r,con,req,reqEvid:EVID[req],prov:state.prov,provEvid:EVID[state.prov],allowed,
-      decision:allowed?"PROCEED":"BLOCKED",over:OVER[req]};
+document.getElementById("run").addEventListener("click", () => {
+  const raw = document.getElementById("eff").value;
+  const effect = raw === "__null__" ? null : (raw === "__unknown__" ? "quarantine_and_notify" : raw);
+  const consequence = C[document.getElementById("cons").value];
+  const obsSel = document.getElementById("obs").value;
+  const maxAge = parseInt(document.getElementById("maxage").value || "0", 10);
+  const policy = maxAge > 0 ? {maxAgeDays:maxAge} : null;
+  let obs = null;
+  if(obsSel !== "none"){
+    obs = {binding:B[obsSel], ageDays: obsSel === "BOUND" ? parseInt(document.getElementById("age").value||"0",10) : null};
   }
+  const g = gate(effect, consequence, obs, policy);
+  document.getElementById("record").textContent = record(g, {declared_effect: effect === null ? null : effect});
+});
 
-  function bars(n){let h='<div class="bars">';for(let i=0;i<4;i++)h+='<span class="seg'+(i<=n?' on':'')+'"></span>';return h+'</div>';}
-  function evChips(cur){let s='<div class="evchips">';EVID.forEach((e,ei)=>{s+='<button class="evchip" data-ev="'+ei+'" aria-pressed="'+(ei===cur)+'">'+e+'</button>';});return s+'</div>';}
+/* chain builder */
+const steps = [];
+function renderSteps(){
+  const host = document.getElementById("steps");
+  host.innerHTML = "";
+  steps.forEach((s, i) => {
+    host.insertAdjacentHTML("beforeend", `<div class="step">
+      <div><label>Step ${i+1} declared effect</label>
+        <select data-i="${i}" data-k="e">
+          ${["read_only","recoverable_local","externally_recoverable","non_recoverable","externally_visible"].map(o=>`<option ${s.e===o?"selected":""}>${o}</option>`).join("")}
+        </select></div>
+      <div><label>Consequence</label>
+        <select data-i="${i}" data-k="c">${Cname.map(o=>`<option ${s.c===o?"selected":""}>${o}</option>`).join("")}</select></div>
+      <div><button data-rm="${i}">Remove</button></div>
+    </div>`);
+  });
+  host.querySelectorAll("select").forEach(sel => sel.addEventListener("change", e => {
+    steps[+e.target.dataset.i][e.target.dataset.k] = e.target.value; }));
+  host.querySelectorAll("button[data-rm]").forEach(b => b.addEventListener("click", e => {
+    steps.splice(+e.target.dataset.rm,1); renderSteps(); }));
+}
+document.getElementById("addStep").addEventListener("click", () => { steps.push({e:"read_only", c:"LOW"}); renderSteps(); });
+document.getElementById("preset1").addEventListener("click", () => {
+  steps.length = 0;
+  steps.push({e:"read_only",c:"LOW"},{e:"recoverable_local",c:"LOW"},{e:"externally_recoverable",c:"HIGH"});
+  renderSteps();
+});
+document.getElementById("preset2").addEventListener("click", () => {
+  steps.length = 0;
+  steps.push({e:"read_only",c:"LOW",stale:true},{e:"read_only",c:"LOW"},{e:"read_only",c:"LOW"});
+  renderSteps();
+  document.getElementById("chainRecord").textContent =
+    "Preset loaded. The second link is treated as stale when you gate it, which is what makes an all-read-only chain fail closed.";
+});
+document.getElementById("runChain").addEventListener("click", () => {
+  if(!steps.length){ document.getElementById("chainRecord").textContent = "Add at least one step. An empty chain has no established bound and fails closed to irreversible.";
+    const g = gateChain([], [], null, null);
+    document.getElementById("chainRecord").textContent += "\n\n" + record(g, {steps:0});
+    return; }
+  const anyStale = steps.some(s => s.stale);
+  const obs = anyStale ? steps.map(s => ({binding: s.stale ? B.STALE : B.BOUND, ageDays: 1})) : null;
+  const g = gateChain(steps.map(s=>s.e), steps.map(s=>C[s.c]), obs, null);
+  document.getElementById("chainRecord").textContent = record(g, {steps: steps.map((s,i)=>({step:i+1, declared_effect:s.e, consequence:s.c}))});
+});
 
-  function render(){
-    sel.value=state.c;
-    const c=CASES[state.c], m=compute(c);
-    const sc = m.uncl ? "--c3" : REV[c.rev].vc;
-    Array.from(rail.children).forEach((b,i)=>b.setAttribute("aria-current",String(i===state.s)));
-    const stage=document.getElementById("stage");
-    stage.style.setProperty("--sc","var("+sc+")");
-    let h='<span class="stripe"></span>';
-    const revLabel = m.uncl ? "Unclassified" : REV[c.rev].label;
-
-    if(state.s===0){
-      h+='<div class="st-eyebrow">Stage 01 &middot; The request</div><div class="st-h">'+c.a+'</div>'+
-         '<div class="kv"><span class="pill" style="--pc:var(--accent)">'+c.d+'</span></div>'+
-         '<p class="why" style="margin-top:16px">'+c.ctx+'</p>'+
-         '<p class="why">The gate does not ask the agent whether this is safe. It classifies the action from its declared effect, then decides, outside the model.</p>';
-    } else if(state.s===1){
-      h+='<div class="st-eyebrow">Stage 02 &middot; Classify</div><div class="st-h">Two independent axes</div>'+
-         '<div class="row2">'+
-         '<div class="mini"><div class="lab">Reversibility</div><div class="big" style="color:var('+sc+')">'+revLabel+'</div><p class="why" style="margin-top:8px">'+(m.uncl?"The effect was never declared, so the class cannot be established.":c.rw)+'</p></div>'+
-         '<div class="mini"><div class="lab">Consequence</div><div class="big">'+c.cons.charAt(0)+c.cons.slice(1).toLowerCase()+'</div><p class="why" style="margin-top:8px">'+c.cw+'</p></div>'+
-         '</div><p class="why">These are separate signals. Reversibility is whether you can take it back; consequence is how much it affects. The gate uses both.</p>';
-    } else if(state.s===2){
-      h+='<div class="st-eyebrow">Stage 03 &middot; Required gate</div><div class="st-h">The stricter axis governs</div>'+
-         '<div class="kv"><span class="pill" style="--pc:var('+VC[m.req]+')">'+m.over+'</span><span class="pill" style="--pc:var(--faint)">evidence: '+m.reqEvid+'</span></div>'+
-         '<p class="why">Required oversight is the worse of the two axes, here <b>'+(m.r>=m.con?"reversibility":"consequence")+'</b> sets it. '+
-         (m.uncl?'An unclassified action defaults to the most restrictive class.':'')+' The evidence bar rises with it, so an action you cannot take back demands the strongest assurance before it runs.</p>';
-    } else if(state.s===3){
-      h+='<div class="st-eyebrow">Stage 04 &middot; Evidence check</div><div class="st-h">Does the evidence meet the bar?</div>'+
-         '<div class="row2">'+
-         '<div class="mini"><div class="lab">Required</div><div class="evrow"><span class="t" style="color:var('+VC[m.req]+')">'+m.reqEvid+'</span></div>'+bars(m.req).replace(/--sc/g,VC[m.req])+'</div>'+
-         '<div class="mini"><div class="lab">Provided &middot; click to adjust</div><div class="evrow"><span class="t">'+m.provEvid+'</span></div>'+evChips(state.prov)+bars(state.prov).replace(/--sc/g,m.allowed?"--ok":"--block")+'</div>'+
-         '</div><p class="why">'+(m.uncl?'No class means no way to match evidence to a requirement. It fails closed, and no amount of evidence substitutes for a missing classification.':(m.allowed?'The evidence provided meets or exceeds what this action class requires, so the gate lets it proceed.':'The evidence falls short of what this action class requires. Raise it to <b>'+m.reqEvid+'</b> and the decision flips to proceed. Partial evidence cannot be promoted into authority for the stronger action.'))+'</p><p class="why" style="font-size:12px;color:var(--faint);margin-top:9px">Adjust to see the gate respond. In practice the evidence must be genuinely attested, not merely claimed, so you cannot lift the bar by asserting more.</p>';
-    } else {
-      const dc = m.allowed ? "--ok" : "--block";
-      h+='<div class="st-eyebrow">Stage 05 &middot; Decision</div>'+
-         '<div class="decision" style="margin-top:10px"><span class="verdict-big" style="--dc:var('+dc+')">'+m.decision+'</span><span class="vtag" style="--dc:var('+dc+')">'+(m.allowed?m.over.toUpperCase():(m.uncl?"FAIL-CLOSED":"INSUFFICIENT EVIDENCE"))+'</span></div>'+
-         '<p class="outcome">'+(m.allowed?c.oa:c.ob)+'</p>'+
-         '<p class="why">Enforced by policy at the execution point, not by the model that proposed the action.</p>';
-    }
-    stage.innerHTML=h;
-    document.getElementById("back").disabled=state.s===0;
-    const nx=document.getElementById("next");
-    nx.textContent = state.s===4 ? "Restart ↺" : "Next →";
-    if(state.s===3){stage.querySelectorAll(".evchip").forEach(ch=>{ch.onclick=()=>{state.prov=+ch.dataset.ev;render();};});}
-  }
-  document.getElementById("back").onclick=()=>{if(state.s>0){state.s--;render();}};
-  document.getElementById("next").onclick=()=>{state.s=state.s===4?0:state.s+1;render();};
-  state.prov=CASES[state.c].prov;
-  render();
-
-  // ---- classify your own action ----
-  const EFFECTS=[
-    {k:"read_only",lab:"Observes state, changes nothing",cls:"READ_ONLY"},
-    {k:"recoverable_local",lab:"Changes state I can restore myself",cls:"REVERSIBLE"},
-    {k:"externally_recoverable",lab:"Recoverable only by another party",cls:"EXTERNALLY_REVERSIBLE"},
-    {k:"non_recoverable",lab:"Cannot be recovered, or externally visible",cls:"IRREVERSIBLE"},
-    {k:"undeclared",lab:"Cannot be established (undeclared)",cls:"IRREVERSIBLE"}
-  ];
-  const CO=["LOW","MEDIUM","HIGH","CRITICAL"];
-  const OID=["unattended","supervised","approval_required","human_owns"];
-  const cs={name:"Merge release branch to main",e:2,c:2};
-  const effBox=document.getElementById("clEffect"),conBox=document.getElementById("clCons"),
-        nameIn=document.getElementById("clName"),outBox=document.getElementById("clOut");
-  EFFECTS.forEach((ef,i)=>{const b=document.createElement("button");b.className="clopt";b.style.setProperty("--cc","var("+REV[ef.cls].vc+")");
-    b.innerHTML='<span class="dot" style="background:var('+REV[ef.cls].vc+')"></span>'+ef.lab;b.onclick=()=>{cs.e=i;renderCl();};effBox.appendChild(b);});
-  CO.forEach((c,i)=>{const b=document.createElement("button");b.className="clopt";b.style.setProperty("--cc","var("+VC[i]+")");
-    b.textContent=c.charAt(0)+c.slice(1).toLowerCase();b.onclick=()=>{cs.c=i;renderCl();};conBox.appendChild(b);});
-  nameIn.value=cs.name;nameIn.oninput=()=>{cs.name=nameIn.value;renderCl();};
-  function renderCl(){
-    Array.from(effBox.children).forEach((b,i)=>b.setAttribute("aria-pressed",String(i===cs.e)));
-    Array.from(conBox.children).forEach((b,i)=>b.setAttribute("aria-pressed",String(i===cs.c)));
-    const ef=EFFECTS[cs.e],cls=ef.cls,r=REV[cls].i,req=Math.max(r,cs.c);
-    const json={action:cs.name||"(unnamed action)",declared_effect:ef.k,reversibility_class:cls.toLowerCase(),
-      consequence_tier:CO[cs.c].toLowerCase(),required_oversight:OID[req],required_evidence_tier:EVID[req],aisvs_c9:["C9.2.3","C9.2.4","C9.5.3"]};
-    const js=JSON.stringify(json,null,2);
-    outBox.innerHTML='<div class="clo-head"><span class="pill" style="--pc:var('+REV[cls].vc+')">'+REV[cls].label+'</span>'+
-      '<span class="pill" style="--pc:var('+VC[req]+')">'+OVER[req]+'</span>'+
-      '<span class="pill" style="--pc:var(--faint)">evidence: '+EVID[req]+'</span></div>'+
-      '<p class="why">'+(ef.k==="undeclared"?'Undeclared, so it fails closed to the most restrictive class. No evidence can substitute for a missing classification. ':'Computed from the declared effect, not guessed. ')+'Required oversight is the stricter of reversibility and consequence.</p>'+
-      '<div class="jsonwrap"><button class="copybtn" id="clCopy">Copy JSON</button><pre class="json">'+js.replace(/</g,"&lt;")+'</pre></div>';
-    const cp=document.getElementById("clCopy");
-    cp.onclick=()=>{if(navigator.clipboard){navigator.clipboard.writeText(js).then(()=>{cp.textContent="Copied ✓";setTimeout(()=>{cp.textContent="Copy JSON";},1400);});}};
-  }
-  function loadCase(idx){
-    const cc=CASES[idx],emap={READ_ONLY:0,REVERSIBLE:1,EXTERNALLY_REVERSIBLE:2,IRREVERSIBLE:3};
-    cs.name=cc.a; cs.e=cc.rev==="UNCLASSIFIED"?4:emap[cc.rev]; cs.c=CONS[cc.cons];
-    nameIn.value=cs.name; renderCl();
-  }
-  loadCase(state.c);
-})();
+/* boot */
+renderCorpus();
+Object.keys(SECTORS).forEach(name => {
+  const b = document.createElement("button");
+  b.textContent = name;
+  b.addEventListener("click", () => renderSector(name));
+  document.getElementById("sectorTabs").appendChild(b);
+});
+renderSector(Object.keys(SECTORS)[0]);
+renderSteps();
 </script>
 </body>
 </html>
