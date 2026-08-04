@@ -12,6 +12,8 @@ Results are published and hosted by the implementer, not by this repository. Thi
 
 To add an entry, publish the filled results template somewhere a reader can fetch it unchanged, then open a pull request adding a row below with the release, the date, a link, and a SHA-256 of the published artifact together with the filename that digest belongs to.
 
+Every row states where its verdicts came from, by case: how many came from the behaviour the implementation ships, how many from scaffolding written to make a case testable, and how many had no mechanism at all. The names your own report uses for those categories do not matter, only the counts. Give it by case rather than by table row, since a row can carry several cases. Where a run did not record this, the cell reads "mechanism not reported" rather than being left empty, because an empty cell reads as though everything came from shipped behaviour, which is the flattering reading and not one the index should hand out for free.
+
 Any link that resolves to fixed bytes works. A version DOI, a release asset, a permalink pinned to a commit, or a file on your own site are all fine, because the digest is what proves a reader is holding what you recorded rather than something published later. What does not work is a link that resolves to whatever is newest, a Zenodo concept DOI being the common case, since the bytes behind it change and an indexed digest stops matching without anything appearing to be wrong. Where a deposit carries more than one file, name the file the digest belongs to, because a hash on its own does not say which artifact it pins.
 
 ## Runs
@@ -20,7 +22,7 @@ Any link that resolves to fixed bytes works. A version DOI, a release asset, a p
 |---|---|---|---|---|---|---|---|
 | [Shango MID](https://doi.org/10.5281/zenodo.21759078) | v1.0.0 (`50d0571`) | 2026-08-02 | 12 / 14 matched · 1 divergence (recorded as an open research question) · 1 n/a | Yes | No, runner closed | `Shango_AISVS_C9_Scenario_Results_v1.0.0.pdf` | `86e2db073d20ed583b0ecb25ab27a16a4ac545251e5fff22ec7780c09a6437d1` |
 
-**Result** carries separate counts rather than a single ratio: how many cases matched, how many diverged, and how many could not be evaluated. A case with no mechanism to exercise it has not failed, and a ratio settles that question silently by putting it in the numerator or the denominator. The row is the part that gets quoted, so a distinction the per-case rows preserve is lost at exactly the point it travels furthest.
+**Result** carries separate counts rather than a single ratio: how many cases matched, how many diverged, and how many could not be evaluated. A case with no mechanism to exercise it has not failed, and a ratio settles that question silently by putting it in the numerator or the denominator. The row is the part that gets quoted, so a distinction the per-case rows preserve is lost at exactly the point it travels furthest. The mechanism split rides in the same cell for the same reason. A reader who quotes the count without it has quoted a number the result itself qualifies.
 
 **Self-reported** is yes on every row, by design: the index carries no result the suite author produced.
 
@@ -34,6 +36,6 @@ Check three things before drawing a conclusion from any row.
 
 Which release it was pinned to. The suite changes, and a verdict against one release does not transfer to another.
 
-The mechanism column in the result itself. A verdict from scaffolding written to make a case testable says nothing about what the implementation ships. Discount every `ADAPTER` row when asking what a product does.
+The mechanism split. The Result cell carries the totals; which specific cases were adapter-borne is in the linked document. A verdict from scaffolding written to make a case testable says nothing about what the implementation ships. Discount the adapter-borne cases when asking what a product does.
 
 Whether a third party can re-run it. A result nobody outside the implementer can reproduce is a report, not evidence.
