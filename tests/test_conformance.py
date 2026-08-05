@@ -4,11 +4,9 @@ These encode the properties an implementation of reversibility-graded
 action-class authority must satisfy. An implementation "conforms" if every test
 here passes against it. The scenarios file is exercised end to end as well.
 """
-import pathlib
-from datetime import datetime, timedelta, timezone
+from datetime import timedelta
 
 import pytest
-import yaml
 
 from reversibility import (
     Binding,
@@ -33,8 +31,6 @@ from conftest import (  # noqa: E402  - shared with contributed-corpus suites
     NOW,
     assert_manifest,
     load_scenarios,
-    obs as _obs,
-    policy as _policy,
     run_scenario,
 )
 
