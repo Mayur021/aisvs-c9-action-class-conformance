@@ -29,32 +29,20 @@ from reversibility import (
     required_oversight,
 )
 
-# Fixed so a conformance run is reproducible rather than dependent on when it ran.
-NOW = datetime(2026, 8, 2, 12, 0, 0, tzinfo=timezone.utc)
-
-
-def _obs(spec):
-    """Build an Observation from a scenario's observation block."""
-    if spec is None:
-        return None
-    b = Binding[spec["binding"]]
-    as_of = (
-        NOW - timedelta(days=spec["age_days"]) if "age_days" in spec else None
-    )
-    return Observation(binding=b, observed_as_of=as_of)
-
-
-def _policy(spec):
-    if spec is None:
-        return ObservationPolicy(now=NOW)
-    return ObservationPolicy(
-        max_age=timedelta(days=spec["max_age_days"]) if "max_age_days" in spec else None,
-        now=NOW,
-    )
-
-SCENARIOS = yaml.safe_load(
-    (pathlib.Path(__file__).resolve().parents[1] / "scenarios" / "scenarios.yaml").read_text()
+from conftest import (  # noqa: E402  - shared with contributed-corpus suites
+    NOW,
+    assert_manifest,
+    load_scenarios,
+    obs as _obs,
+    policy as _policy,
+    run_scenario,
 )
+
+
+# The core set only. This module must stay unaware that contributed corpora exist:
+# RESULTS.md publishes "N of M" against this manifest, so a canonical denominator
+# that grew whenever someone contributed would silently redefine every prior row.
+SCENARIOS = load_scenarios("scenarios.yaml")
 
 
 # --- Property 1: the four classes exist and are ordered -----------------------
@@ -178,39 +166,12 @@ def test_scenario_corpus_is_complete():
     collapse to one entry and pass while the parametrised run executed an
     extra case. Duplicates are rejected first, against the list.
     """
-    ids = [sc["id"] for sc in SCENARIOS]
-    duplicates = sorted({i for i in ids if ids.count(i) > 1})
-    assert not duplicates, f"duplicate scenario ids: {duplicates}"
-
-    found = set(ids)
-    assert found == EXPECTED_SCENARIO_IDS, (
-        f"missing: {sorted(EXPECTED_SCENARIO_IDS - found)}, "
-        f"unexpected: {sorted(found - EXPECTED_SCENARIO_IDS)}"
-    )
+    assert_manifest(SCENARIOS, EXPECTED_SCENARIO_IDS)
 
 
 @pytest.mark.parametrize("sc", SCENARIOS, ids=[s["id"] for s in SCENARIOS])
 def test_worked_scenarios(sc):
-    exp = sc["expect"]
-    pol = _policy(sc.get("policy"))
-    if "chain" in sc:
-        ch = sc["chain"]
-        cons = [ConsequenceTier[c] for c in ch["consequences"]]
-        obs = (
-            [_obs(o) for o in ch["observations"]] if "observations" in ch else None
-        )
-        g = gate_chain(ch["declared_effects"], cons, obs, pol if obs else None)
-    else:
-        o = _obs(sc.get("observation"))
-        g = gate(
-            sc["declared_effect"],
-            ConsequenceTier[sc["consequence"]],
-            o,
-            pol if o else None,
-        )
-    assert g.reversibility.name == exp["reversibility"]
-    assert g.oversight.name == exp["oversight"]
-    assert g.evidence_tier == exp["evidence_tier"]
+    run_scenario(sc)
 
 
 # --- Property 8: declaration-only remains the default and is unchanged --------

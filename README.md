@@ -172,3 +172,8 @@ own adapter against the same vocabulary.
 ## License
 
 Apache-2.0.
+
+
+## Real-data fixtures
+
+Seven scenarios in `scenarios/real.yaml` (ids prefixed `real_`) are generated from a measured corpus of the public MCP registry and exercised by `tests/test_real_fixtures.py`. They load alongside the core set; the core suite does not depend on them and runs without both files present. See [FIXTURES.md](FIXTURES.md) for provenance, the annotation-to-class mapping, the install mapping, and known limits.
