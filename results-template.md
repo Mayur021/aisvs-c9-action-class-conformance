@@ -2,7 +2,7 @@
 
 Record an implementation's actual verdicts against the expected outcomes in `scenario.md`. Copy this file once per implementation under test.
 
-- Suite release: `<tag, e.g. v1.0.1>`
+- Suite release: `<tag, e.g. v1.2.0>`
 - Suite commit: `<full SHA>`
 - Mode: `<declaration-only / declaration plus observation>`
 - Implementation under test: `<name and version>`

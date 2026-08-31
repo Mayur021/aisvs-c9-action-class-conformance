@@ -1,7 +1,7 @@
 """Reference model for reversibility-graded action-class authority.
 
 Implements the classification and gating primitives behind OWASP AISVS v1.0
-chapter C9 (Orchestration & Agentic Action Security):
+chapter C9 (Orchestration & Agentic Security):
 
   - C9.2.3  trusted reversibility classification
   - C9.2.4  runtime enforcement by class
