@@ -261,7 +261,7 @@ there is no server.</p>
 
 <footer>
   Implements OWASP AISVS v1.0 C9.2.3, C9.2.4, C9.2.10 and C9.5.3 as expressed in the reference model.
-  Ported from <code>model.py</code>, <code>chain.py</code> and <code>observation.py</code>; the corpus runs on load
+  Ported from <code>model.py</code>, <code>chain.py</code> and <code>observation.py</code> at v1.2.0; the corpus runs on load
   so disagreement with the suite is reported rather than hidden. If the model changes, re-check this page.<br>
   Source: <a href="https://github.com/Mayur021/aisvs-c9-action-class-conformance">Mayur021/aisvs-c9-action-class-conformance</a>, Apache-2.0.
   Independent runs are indexed in RESULTS.md by link and digest. This page is not one of them.
@@ -302,8 +302,11 @@ function requiredOversight(r, c){ return Math.max(r, c); }
 function effectiveBinding(obs, policy){
   if(!obs) return B.UNOBSERVED;
   if(obs.binding !== B.BOUND) return obs.binding;
-  if(!policy || policy.maxAgeDays === null || policy.maxAgeDays === undefined) return B.BOUND;
   if(obs.ageDays === null || obs.ageDays === undefined) return B.UNOBSERVED;
+  /* An age below zero is an as-of the clock has not reached. It is under every
+     maximum, so without this the entry never ages out at any policy. */
+  if(obs.ageDays < 0) return B.UNOBSERVED;
+  if(!policy || policy.maxAgeDays === null || policy.maxAgeDays === undefined) return B.BOUND;
   return obs.ageDays <= policy.maxAgeDays ? B.BOUND : B.UNOBSERVED;
 }
 function declarationIsUsable(b){ return b === B.BOUND; }
@@ -336,23 +339,42 @@ function gate(effect, consequence, obs, policy){
 
 /* chain.py */
 function chainReversibility(classes){ return classes.length ? Math.max.apply(null, classes) : R.IRREVERSIBLE; }
+/* A step the caller said nothing about is unaccounted, not low. Defaulting it to
+   the weakest tier lets an omission buy a softer gate. */
+function chainConsequence(effects, consequences){
+  const n = effects.length;
+  if(consequences === undefined || consequences === null){
+    return [C.CRITICAL, `consequence axis declined, all ${n} step(s) unaccounted, resolved to the strongest tier`];
+  }
+  if(consequences.length !== n){
+    return [C.CRITICAL, `${consequences.length} consequence(s) for ${n} step(s), unaccounted, resolved to the strongest tier`];
+  }
+  if(consequences.length === 0){
+    return [C.CRITICAL, "empty chain, nothing accounted, resolved to the strongest tier"];
+  }
+  return [Math.max.apply(null, consequences), null];
+}
+function appendWhy(why, unaccounted){
+  return unaccounted === null ? why : `${why}; consequence: ${unaccounted}`;
+}
 function gateChain(effects, consequences, observations, policy){
   const stepClasses = effects.map(classify);
   let r = chainReversibility(stepClasses);
-  const c = (consequences && consequences.length) ? Math.max.apply(null, consequences) : C.LOW;
+  const cc = chainConsequence(effects, consequences);
+  const c = cc[0], unaccounted = cc[1];
   if(observations === undefined || observations === null){
     const ov = requiredOversight(r, c);
     return {reversibility:r, consequence:c, oversight:ov, evidence_tier:EVIDENCE_TIER[ov],
-      rationale:`worst-case across ${stepClasses.length} steps: reversibility=${Rname[r].toLowerCase()}, gated at commencement`,
+      rationale:appendWhy(`worst-case across ${stepClasses.length} steps: reversibility=${Rname[r].toLowerCase()}, gated at commencement`, unaccounted),
       binding:null, mode:"declaration-only"};
   }
   const b = chainBinding(observations.map(o => effectiveBinding(o, policy)));
   let why;
   if(!declarationIsUsable(b)){
     r = R.IRREVERSIBLE;
-    why = `worst-case across ${stepClasses.length} steps, stalest link binding=${Bname[b].toLowerCase()}: declarations not usable, failed closed`;
+    why = appendWhy(`worst-case across ${stepClasses.length} steps, stalest link binding=${Bname[b].toLowerCase()}: declarations not usable, failed closed`, unaccounted);
   } else {
-    why = `worst-case across ${stepClasses.length} steps: reversibility=${Rname[r].toLowerCase()}, binding=${Bname[b].toLowerCase()}, gated at commencement`;
+    why = appendWhy(`worst-case across ${stepClasses.length} steps: reversibility=${Rname[r].toLowerCase()}, binding=${Bname[b].toLowerCase()}, gated at commencement`, unaccounted);
   }
   const ov = requiredOversight(r, c);
   return {reversibility:r, consequence:c, oversight:ov, evidence_tier:EVIDENCE_TIER[ov], rationale:why, binding:b, mode:"declaration+observation"};

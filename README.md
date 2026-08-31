@@ -43,6 +43,15 @@ to carry.
 An action whose class is undeclared or unrecognised is treated as the most
 restrictive class. Omitting the classification cannot quietly lower the bar.
 
+The same rule runs wherever an input is missing rather than wrong. A chain step
+carrying no consequence is unaccounted rather than low, and every unaccounted
+step resolves to the strongest tier. An observation dated ahead of the clock is
+unusable rather than very fresh, because a negative age is under every maximum
+and would never expire at any policy. And malformed input on the decision path
+returns a verdict rather than raising: a caller that reads an exception as no
+policy applied has an open gate, so a raise there is fail-open wearing a
+different coat.
+
 **4. Worst case across a composed chain.**
 
 A sequence of individually reversible steps can reach an irreversible outcome no
@@ -140,6 +149,20 @@ print(g.reversibility.name, g.oversight.name, g.evidence_tier)
 # low blast radius, still the hard gate, because it cannot be undone
 ```
 
+## Releases
+
+Verdicts change between releases, so a result only means something against a
+named one. That is why every row in `RESULTS.md` carries a suite release and a
+commit. Pin a tag rather than following `main`:
+
+```bash
+pip install "git+https://github.com/Mayur021/aisvs-c9-action-class-conformance@v1.2.0"
+```
+
+`reversibility.__version__` reports the release you are running. The current one
+is v1.2.0, which closed four fail-open paths; a verdict recorded against v1.1.1
+or earlier does not transfer to it.
+
 ## Conformance
 
 An implementation conforms if it satisfies the properties in
@@ -153,6 +176,15 @@ An implementation conforms if it satisfies the properties in
    the two.
 6. A composed chain is gated at its worst-case reachable class from the start.
 7. Every worked scenario in `scenarios/scenarios.yaml` resolves as documented.
+8. Declaration-only stays the default, and its verdicts are unchanged by the
+   observation input existing.
+9. Binding has three states in the record and two outcomes at the gate.
+10. Absence of an observation is not agreement.
+11. Observations expire on a clock, and an as-of ahead of that clock does not
+    outrun it.
+12. A chain is as stale as its stalest link.
+13. The binding gap is computable, and only where observations exist.
+14. The package reports one version rather than two.
 
 The scenarios file is the readable contract; the tests are the executable one.
 

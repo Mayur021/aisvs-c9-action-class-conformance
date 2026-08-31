@@ -18,9 +18,9 @@ is the class of bug this policy is mainly about.
 
 | Version | Supported |
 |---|---|
-| v1.0.2 | yes |
-| v1.0.1 | fixes land in the next tag |
-| v1.0.0 | fixes land in the next tag |
+| v1.2.0 | yes |
+| v1.1.1, v1.1.0 | no. Both fail open on the four paths closed in v1.2.0. |
+| v1.0.2, v1.0.1, v1.0.0 | no. Fixes land in the next tag. |
 | untagged `main` | no |
 
 Conformance results are cited by tag (see RESULTS.md), so please name the tag you
@@ -35,6 +35,11 @@ Report privately, before opening a public issue, if you find any of:
 - Fail-closed not firing: an undeclared, misspelled, or unrecognised class that
   resolves to anything other than the most restrictive class.
 - A chain whose folded class is weaker than the worst declared class in it.
+- An input that raises out of the decision path instead of returning a verdict.
+  A caller that reads an exception as no policy applied has an open gate, so a
+  raise there is a fail-open in a different shape.
+- An observation or approval that cannot expire, so an attestation reads as
+  current no matter how old it is or when it was made.
 - Anything in the suite that lets a non-conforming implementation pass, since a
   passing run is what people cite.
 
