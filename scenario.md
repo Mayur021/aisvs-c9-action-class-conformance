@@ -106,3 +106,19 @@ Test assertion: seal-only verification permits (the documented limit); log-recon
 - D (under-seal): the honest-issuer limit and the reconciliation backstop.
 
 Together these are the closed threat model: a missing class fails closed by default, a relabeled class fails closed by the binding, a trimmed tail fails closed by the total, and a dishonest seal falls to reconciliation.
+
+---
+
+## Scoring: classifying a result before it becomes a count
+
+A run produces per-case verdicts that feed the matched, divergence and not-evaluable counts in RESULTS.md. Those counts are only as honest as the classification behind them, and the failure that matters is scoring any block as a pass. Four categories, because three is one short.
+
+**True pass, reachability.** The gate assigned worst-case from T0 for the right reason, and the critical path spans the steps the case is about. This is the only category that says reachability worked.
+
+**True pass, fail-closed default.** The case was blocked because the action under test was absent from the classification registry, or could not be classified. That is correct behaviour and it validates the default, but nothing traversed and it says nothing about reachability. Counting it as the category above reports a reachability pass the run did not earn.
+
+**Genuine bypass.** Every step admitted, and the composed effect is one the profile would deny if requested directly. For class collapse, an externally-reversible terminal routed clear. For registry drift, an entry reading reversible where the action commits externally.
+
+**Fail-closed noise.** Blocked, but for a reason unrelated to the case under test. The common shape is an unrelated step being unregistered, so the gate stops before the case is reached. Recorded separately, or the results are unreadable.
+
+The split between the two true-pass categories comes from a run of this suite against a shipped implementation, where an unregistered custom action returned a block that fits neither the reachability pass nor the noise definition.
