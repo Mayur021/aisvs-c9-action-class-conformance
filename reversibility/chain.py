@@ -40,6 +40,43 @@ def chain_reversibility(classes: Iterable[ReversibilityClass]) -> ReversibilityC
     return ReversibilityClass(max(classes))
 
 
+def _chain_consequence(effects, consequences):
+    """The chain's consequence tier, and why, when the axis is not fully given.
+
+    A step the caller said nothing about is unaccounted, not low. Defaulting it
+    to the weakest tier lets an omission buy a softer gate, which is the same
+    fail-open shape as an undeclared class defaulting to reversible. Every
+    shortfall resolves to the strongest tier instead, and the basis is recorded
+    so a reader can tell a gate that was strengthened by omission from one the
+    caller actually asked for.
+
+    Declining the axis outright (consequences=None) lands on the same verdict
+    with a different recorded basis: the caller declined, rather than supplied a
+    list that did not cover the chain.
+    """
+    n = len(effects)
+    if consequences is None:
+        return ConsequenceTier.CRITICAL, (
+            "consequence axis declined, all "
+            f"{n} step(s) unaccounted, resolved to the strongest tier"
+        )
+    cons = list(consequences)
+    if len(cons) != n:
+        return ConsequenceTier.CRITICAL, (
+            f"{len(cons)} consequence(s) for {n} step(s), unaccounted, "
+            "resolved to the strongest tier"
+        )
+    if not cons:
+        return ConsequenceTier.CRITICAL, (
+            "empty chain, nothing accounted, resolved to the strongest tier"
+        )
+    return ConsequenceTier(max(cons)), None
+
+
+def _append(why: str, unaccounted: Optional[str]) -> str:
+    return why if unaccounted is None else f"{why}; consequence: {unaccounted}"
+
+
 def gate_chain(
     declared_effects: Iterable[Optional[str]],
     consequences: Optional[Iterable[ConsequenceTier]] = None,
@@ -50,7 +87,9 @@ def gate_chain(
 
     Each step is classified from its declared effect (undeclared fails closed).
     The chain's oversight is computed from the worst-case reversibility and the
-    worst-case consequence reachable anywhere in the chain.
+    worst-case consequence reachable anywhere in the chain. A step carrying no
+    consequence is unaccounted rather than low, and every unaccounted step
+    resolves to the strongest tier, so an omission cannot buy a softer gate.
 
     Where observations are supplied, the chain is also as stale as its stalest
     link: the same worst-case rule applied to a second axis. A chain containing
@@ -61,11 +100,7 @@ def gate_chain(
     step_classes = [classify(e) for e in effects]
     r = chain_reversibility(step_classes)
 
-    if consequences is None:
-        c = ConsequenceTier.LOW
-    else:
-        cons = list(consequences)
-        c = ConsequenceTier(max(cons)) if cons else ConsequenceTier.LOW
+    c, unaccounted = _chain_consequence(effects, consequences)
 
     if observations is None:
         ov = required_oversight(r, c)
@@ -74,9 +109,10 @@ def gate_chain(
             consequence=c,
             oversight=ov,
             evidence_tier=EVIDENCE_TIER[ov],
-            rationale=(
+            rationale=_append(
                 f"worst-case across {len(step_classes)} steps: "
-                f"reversibility={r.name.lower()}, gated at commencement"
+                f"reversibility={r.name.lower()}, gated at commencement",
+                unaccounted,
             ),
             binding=None,
             mode="declaration-only",
@@ -86,15 +122,17 @@ def gate_chain(
     b = chain_binding(effective_binding(o, policy) for o in obs)
     if not declaration_is_usable(b):
         r = ReversibilityClass.IRREVERSIBLE
-        why = (
+        why = _append(
             f"worst-case across {len(step_classes)} steps, stalest link "
-            f"binding={b.name.lower()}: declarations not usable, failed closed"
+            f"binding={b.name.lower()}: declarations not usable, failed closed",
+            unaccounted,
         )
     else:
-        why = (
+        why = _append(
             f"worst-case across {len(step_classes)} steps: "
             f"reversibility={r.name.lower()}, binding={b.name.lower()}, "
-            f"gated at commencement"
+            f"gated at commencement",
+            unaccounted,
         )
     ov = required_oversight(r, c)
     return GateResult(

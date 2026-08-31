@@ -97,7 +97,14 @@ def classify(declared_effect: Optional[str]) -> ReversibilityClass:
     """
     if declared_effect is None:
         return ReversibilityClass.IRREVERSIBLE
-    return _DECLARED_EFFECT.get(declared_effect, ReversibilityClass.IRREVERSIBLE)
+    try:
+        return _DECLARED_EFFECT.get(declared_effect, ReversibilityClass.IRREVERSIBLE)
+    except TypeError:
+        # An unhashable effect is certainly not one the registry defines. This
+        # is the decision path, so it takes the same fail-closed exit as any
+        # other unrecognised input: a caller that reads the exception as "no
+        # policy applied" would turn the raise into an open gate.
+        return ReversibilityClass.IRREVERSIBLE
 
 
 def _oversight_from_reversibility(r: ReversibilityClass) -> Oversight:
@@ -154,7 +161,14 @@ def recognised_effect(declared_effect: Optional[str]) -> bool:
     An unrecognised string is not a classification, so it counts against
     declared coverage rather than for it.
     """
-    return declared_effect is not None and declared_effect in _DECLARED_EFFECT
+    if declared_effect is None:
+        return False
+    try:
+        return declared_effect in _DECLARED_EFFECT
+    except TypeError:
+        # Same reasoning as classify: gate() calls both, so a guard on only one
+        # of them leaves the raise on the decision path.
+        return False
 
 
 def gate(

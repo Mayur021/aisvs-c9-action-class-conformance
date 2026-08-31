@@ -5,7 +5,8 @@ from real, corroborated, pseudonymized records of the public MCP registry, measu
 35 crawl observations (2026-06-09 to 2026-08-01, 44,172 tools on reachable
 servers; declared-vs-verified binding gap 24.46 percentage points). Four pytest
 regression tests (two fail-open families) cover the behaviors flagged during the
-observation-input review. Every fixture
+observation-input review; all four are fixed as of v1.2.0 and the tests are now
+permanent guards rather than expected failures. Every fixture
 is generated from the published dataset by a deterministic generator - no literal is
 hand-typed, and anyone holding the dataset reproduces the selection exactly.
 
@@ -170,17 +171,28 @@ corpus's latest observation and apply the same rule.
 
 ## Regression guards (F8/F9) - operational reading
 
-F8/F9 xfail means v1.1.1 as shipped fails OPEN on unspecified-consequence and
-unhashable-effect inputs - treat the tag as known-bypassable on these paths until the
-fix tag lands. The xfail markers are strict: when the fix ships, the tests fail CI as
-XPASS and the markers are removed in the same commit, converting both into permanent
-fail-closed guards.
+**Fixed in v1.2.0.** Through v1.1.1 the suite failed OPEN on unspecified-consequence
+and unhashable-effect inputs: a chain step carrying no consequence resolved to the
+weakest tier rather than being treated as unaccounted, and an unhashable declared
+effect raised out of the decision path instead of returning a verdict. Both now
+resolve to the strongest tier and to IRREVERSIBLE respectively. The xfail markers
+were strict, so the fix made all four XPASS and reddened CI, and the markers came
+off in the same commit. They are ordinary tests now.
 
-Results-table authors: append these fixed footnote rows to any completed table so a
-consumer holding only the table sees the known-bypassable paths -
+v1.2.0 closes two further fail-open paths on the same axis, found by audit rather
+than by the observation-input review. An observation whose as-of lies in the future
+produced a negative age that no maximum age can exceed, so it never aged out at any
+policy; it now fails closed to UNOBSERVED regardless of the expiry policy. And a
+naive timestamp on either the observation or the policy clock raised TypeError from
+the decision path, which a caller treating an exception as no-policy-applied would
+read as an open gate; both are now refused at construction. Guards for all four live
+in tests/test_conformance.py under properties 11 and 14.
 
-> F8/F9: EXPECTED-FAIL - v1.1.1 fails open on unspecified-consequence and
-> unhashable-effect inputs; see FIXTURES.md.
+Results-table authors: which tag you ran matters here, so name it.
+
+> Suite v1.2.0 or later: no known fail-open paths recorded against the suite.
+> Suite v1.1.1 or earlier: fails open on unspecified-consequence, unhashable-effect,
+> future-dated-observation and naive-timestamp inputs; see FIXTURES.md.
 
 Results tables built on these fixtures inherit the SHIPPED/ADAPTER/NONE mechanism
 column; any mapping scaffolding a third party writes to run them counts as ADAPTER.

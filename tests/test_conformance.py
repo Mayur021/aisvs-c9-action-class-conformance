@@ -4,7 +4,9 @@ These encode the properties an implementation of reversibility-graded
 action-class authority must satisfy. An implementation "conforms" if every test
 here passes against it. The scenarios file is exercised end to end as well.
 """
-from datetime import timedelta
+import pathlib
+import re
+from datetime import datetime, timedelta
 
 import pytest
 
@@ -256,6 +258,36 @@ def test_no_max_age_means_no_expiry():
     assert effective_binding(old, ObservationPolicy(now=NOW)) is Binding.BOUND
 
 
+def test_future_dated_observation_does_not_outrun_the_clock():
+    # A negative age is under every maximum, so without this the entry would
+    # never age out at any policy - the permanent-verification failure the
+    # constructor's as-of rule exists to prevent, reached from the other side.
+    ahead = Observation(Binding.BOUND, NOW + timedelta(days=1))
+    pol = ObservationPolicy(max_age=timedelta(days=30), now=NOW)
+    assert effective_binding(ahead, pol) is Binding.UNOBSERVED
+    assert gate("read_only", ConsequenceTier.LOW, ahead, pol).oversight is Oversight.HUMAN_OWNS
+
+
+def test_future_dated_fails_closed_even_with_no_expiry_policy():
+    # max_age=None means observations do not age out. It does not mean an as-of
+    # the clock has not reached yet is usable.
+    ahead = Observation(Binding.BOUND, NOW + timedelta(days=1))
+    assert effective_binding(ahead, ObservationPolicy(now=NOW)) is Binding.UNOBSERVED
+
+
+def test_naive_timestamps_are_rejected_at_the_boundary_not_on_the_path():
+    # datetime.utcnow() returns a naive datetime, so this is the default mistake
+    # rather than an exotic one. Comparing it against the policy clock raises
+    # TypeError, and a raise on the decision path is an open gate to any caller
+    # that reads an exception as no-policy-applied. It is refused at authoring
+    # time, where nothing can mistake it for a verdict.
+    naive = datetime(2026, 8, 1, 12, 0, 0)
+    with pytest.raises(ValueError):
+        Observation(Binding.BOUND, naive)
+    with pytest.raises(ValueError):
+        ObservationPolicy(now=naive)
+
+
 def test_bound_observation_requires_an_as_of():
     # A bound state with no age cannot expire and would read as permanently
     # verified, which is the failure this whole input exists to prevent.
@@ -315,3 +347,22 @@ def test_unrecognised_effect_counts_against_declared_coverage():
                    ObservationPolicy(now=NOW))
     assert cov.declared == 0.0
     assert cov.verified == 0.0
+
+
+# --- Property 14: the package names one release, not two ----------------------
+
+def test_package_version_matches_the_distribution_version():
+    """RESULTS.md pins every row to a suite release, and the obvious way to fill
+    that cell is to read reversibility.__version__. Where it disagrees with the
+    version the package was built as, a row names a release nobody ran, under a
+    digest that makes it look settled.
+
+    pyproject is read with a regex rather than tomllib, which arrives in 3.11
+    while this package supports 3.9.
+    """
+    import reversibility
+
+    pyproject = (pathlib.Path(__file__).resolve().parents[1] / "pyproject.toml").read_text()
+    declared = re.search(r'^version = "([^"]+)"', pyproject, re.MULTILINE)
+    assert declared, "pyproject.toml has no version line"
+    assert reversibility.__version__ == declared.group(1)

@@ -22,9 +22,15 @@ Three commitments, each chosen against a specific failure mode:
      BOUND. A corpus in which most entries never change is mostly silent, and
      reading silence as conformance manufactures false comfort at exactly the
      scale where it matters.
-  3. Observations expire. Conformance tested against a stale observation is
-     worse than untested because it reads as verified, so an observation carries
-     an as-of time and ages out to UNOBSERVED on a clock.
+  3. Observations expire, and the clock runs in one direction only. Conformance
+     tested against a stale observation is worse than untested because it reads
+     as verified, so an observation carries an as-of time and ages out to
+     UNOBSERVED on a clock. An as-of in the future is not a very fresh
+     observation, it is an unusable one: subtracting it from now yields a
+     negative age that no maximum can exceed, so the entry would never age out
+     at any policy. It fails closed regardless of the expiry policy, because a
+     producer whose clock runs ahead and a producer manufacturing a permanent
+     pass are indistinguishable at this layer.
 
 The clock is deliberate. Ranking entries by prior drift and re-auditing the top
 slice cannot substitute for it. Where most of a population has no change history
@@ -70,6 +76,16 @@ from enum import IntEnum
 from typing import Iterable, Optional, Sequence, Tuple
 
 
+def _is_aware(dt: datetime) -> bool:
+    """Whether a datetime carries a usable UTC offset.
+
+    tzinfo alone is not enough: a tzinfo whose utcoffset returns None is still
+    naive for arithmetic, which is the form that raises at the point of use
+    rather than at the point of authorship.
+    """
+    return dt.tzinfo is not None and dt.tzinfo.utcoffset(dt) is not None
+
+
 class Binding(IntEnum):
     """Whether a declaration is still bound to the contract it was made against.
 
@@ -100,6 +116,12 @@ class Observation:
                 "a BOUND observation must carry observed_as_of; without it the "
                 "observation cannot expire and would read as permanently verified"
             )
+        if self.observed_as_of is not None and not _is_aware(self.observed_as_of):
+            raise ValueError(
+                "observed_as_of must be timezone-aware; a naive timestamp cannot "
+                "be compared against the policy clock, and datetime.utcnow() "
+                "returns one"
+            )
 
 
 @dataclass(frozen=True)
@@ -114,6 +136,13 @@ class ObservationPolicy:
     max_age: Optional[timedelta] = None
     now: Optional[datetime] = None
 
+    def __post_init__(self) -> None:
+        if self.now is not None and not _is_aware(self.now):
+            raise ValueError(
+                "ObservationPolicy.now must be timezone-aware; a naive clock "
+                "cannot be compared against an observation's as-of"
+            )
+
     def _now(self) -> datetime:
         return self.now if self.now is not None else datetime.now(timezone.utc)
 
@@ -127,23 +156,26 @@ def effective_binding(
     A BOUND observation older than the policy's max age ages out to UNOBSERVED
     rather than to STALE: the contract is not known to have mutated, it is
     merely no longer known to be current. Absence of an observation is
-    UNOBSERVED for the same reason.
+    UNOBSERVED for the same reason, and so is an as-of the clock has not reached
+    yet, which no maximum age can ever exceed.
     """
     if observation is None:
         return Binding.UNOBSERVED
     if observation.binding is not Binding.BOUND:
         return observation.binding
     policy = policy or ObservationPolicy()
+    as_of = observation.observed_as_of
+    # Both guards are unreachable through the constructor, which rejects these
+    # shapes at authoring time. They stay because this is the decision path: an
+    # observation reaching here by any other route must still produce a verdict.
+    if as_of is None or not _is_aware(as_of):
+        return Binding.UNOBSERVED
+    now = policy._now()
+    if as_of > now:
+        return Binding.UNOBSERVED
     if policy.max_age is None:
         return Binding.BOUND
-    as_of = observation.observed_as_of
-    if as_of is None:
-        return Binding.UNOBSERVED
-    return (
-        Binding.BOUND
-        if policy._now() - as_of <= policy.max_age
-        else Binding.UNOBSERVED
-    )
+    return Binding.BOUND if now - as_of <= policy.max_age else Binding.UNOBSERVED
 
 
 def declaration_is_usable(binding: Binding) -> bool:
