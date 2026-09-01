@@ -1,7 +1,7 @@
 # Real-data fixtures - provenance, mapping, and limits
 
 Seven scenario fixtures in `scenarios/real.yaml` (ids prefixed `real_`) are built
-from real, corroborated, pseudonymized records of the public MCP registry, measured over
+from real, confirmed, pseudonymized records of the public MCP registry, measured over
 35 crawl observations (2026-06-09 to 2026-08-01, 44,172 tools on reachable
 servers; declared-vs-verified binding gap 24.46 percentage points). Four pytest
 regression tests (two fail-open families) cover the behaviors flagged during the
@@ -156,7 +156,7 @@ corpus's latest observation and apply the same rule.
 
 - **Source:** flips_v1.csv + declared_vectors_v1.csv
 - **Record:** `7db11cce30d8579e/379e7ff3d2df41a1 (destructiveHint true->false, days 20260609->20260610, mode=primary)`
-- **Corroboration:** decl_confirm_count=33; one of 17 corroborated permissive destructiveHint flips in this corpus
+- **Corroboration:** decl_confirm_count=33; one of 17 confirmed permissive destructiveHint flips in this corpus (see M6 for what confirmed means here)
 - **What a pass does NOT prove:** A pass proves the post-flip STATE fails closed, NOT that permissive-flip findings are detected - the finding channel is untestable in this schema (misfit M1); the _state_only suffix carries that caveat.
 - **What a FAIL means for your fleet:** A FAIL means a tool can silence its own danger label and keep its standing - the cheapest possible attack on a declaration-gated fleet.
 
@@ -211,6 +211,15 @@ column; any mapping scaffolding a third party writes to run them counts as ADAPT
   visible only in the flips dataset. idempotentHint flips are class-invariant under
   the mapping and outside supersession semantics entirely.
 - **M5 - LOW is not benign** (see the LOW-row caveat above).
+- **M6 - "confirmed" here is repeated observation by ONE crawler, not independent
+  corroboration.** The deposit states the bound itself, in `results.json`:
+  "confirmations are repeated crawls by one crawler; independent-observer corroboration
+  applies to the receipt network, not this baseline series." Every `decl_confirm_count`
+  and `n_obs` in this document is confirmation at that strength, including the 17
+  permissive destructiveHint flips, each confirmed between 17 and 33 times. Do not
+  describe these fixtures as independently corroborated. Raised by avp9-nexus in review
+  on GenAI-Security-Project/agent-control-standard#38, against wording that had used
+  the stronger word in this file and in three other places.
 
 ## Scope
 
