@@ -26,6 +26,7 @@ commonly diverge):
 from __future__ import annotations
 
 from dataclasses import dataclass
+from datetime import datetime
 from enum import IntEnum
 from typing import Optional
 
@@ -145,6 +146,38 @@ def required_oversight(
 
 
 @dataclass(frozen=True)
+class Supersession:
+    """A declared class that replaced an earlier one, and which way it moved.
+
+    `direction` is derived here rather than supplied by the caller. The whole
+    reason the SHOULD clause in observation.py exists is that adapters must not
+    disagree about what "permissive" means, and an adapter that names its own
+    direction can call a weakening a correction.
+    """
+
+    previous: ReversibilityClass
+    new: ReversibilityClass
+    as_of: datetime
+    direction: str  # "permissive" | "restrictive" | "class_invariant"
+
+
+def supersession_direction(
+    previous: ReversibilityClass, new: ReversibilityClass
+) -> str:
+    """Which way a class moved, on the existing ordering.
+
+    The ladder is ordered least to most restrictive, so a lower new value is a
+    weaker gate. This is not new semantics: it is the ordering already used by
+    required_oversight and chain_reversibility, made addressable.
+    """
+    if new < previous:
+        return "permissive"
+    if new > previous:
+        return "restrictive"
+    return "class_invariant"
+
+
+@dataclass(frozen=True)
 class GateResult:
     reversibility: ReversibilityClass
     consequence: ConsequenceTier
@@ -153,6 +186,8 @@ class GateResult:
     rationale: str
     binding: Optional[Binding] = None
     mode: str = "declaration-only"
+    supersession: Optional[Supersession] = None
+    finding: bool = False
 
 
 def recognised_effect(declared_effect: Optional[str]) -> bool:
@@ -176,6 +211,7 @@ def gate(
     consequence: ConsequenceTier = ConsequenceTier.LOW,
     observation: Optional[Observation] = None,
     policy: Optional[ObservationPolicy] = None,
+    superseded: Optional[tuple] = None,
 ) -> GateResult:
     """Classify an action and return the gate decision for it.
 
@@ -199,6 +235,20 @@ def gate(
     r = classify(declared_effect)
     known = recognised_effect(declared_effect)
 
+    # A class flip supersedes rather than mutates, per observation.py. The event
+    # is surfaced here so an implementation cannot pass the suite while emitting
+    # nothing; `finding` carries the SHOULD clause for the permissive direction.
+    sup = None
+    finding = False
+    if superseded is not None:
+        prev_effect, as_of = superseded
+        if as_of.tzinfo is None or as_of.tzinfo.utcoffset(as_of) is None:
+            raise ValueError("superseded as_of must be timezone-aware")
+        prev = classify(prev_effect)
+        direction = supersession_direction(prev, r)
+        sup = Supersession(previous=prev, new=r, as_of=as_of, direction=direction)
+        finding = direction == "permissive"
+
     if observation is None:
         ov = required_oversight(r, consequence)
         why = (
@@ -217,6 +267,8 @@ def gate(
             rationale=why,
             binding=None,
             mode="declaration-only",
+            supersession=sup,
+            finding=finding,
         )
 
     b = effective_binding(observation, policy)
@@ -242,4 +294,6 @@ def gate(
         rationale=why,
         binding=b,
         mode="declaration+observation",
+        supersession=sup,
+        finding=finding,
     )
