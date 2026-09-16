@@ -1,4 +1,4 @@
-"""Reference implementation of reversibility-graded action-class authority.
+ """Reference implementation of reversibility-graded action-class authority.
 
 Public surface:
 
@@ -11,6 +11,8 @@ Public surface:
     )
 """
 from .model import (
+    Supersession,
+    supersession_direction,
     ConsequenceTier,
     EVIDENCE_TIER,
     GateResult,
@@ -39,6 +41,8 @@ __all__ = [
     "Oversight",
     "EVIDENCE_TIER",
     "GateResult",
+    "Supersession",
+    "supersession_direction",
     "classify",
     "required_oversight",
     "gate",
