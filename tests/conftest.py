@@ -48,6 +48,20 @@ def policy(spec):
     )
 
 
+def superseded(spec):
+    """Build gate()'s `superseded` argument from a scenario's supersession block.
+
+    Absent the block this returns None and the scenario behaves exactly as before,
+    which is what keeps every existing scenario and the published manifest untouched.
+    """
+    if spec is None:
+        return None
+    return (
+        spec["previous_declared_effect"],
+        NOW - timedelta(days=spec["as_of_days_ago"]),
+    )
+
+
 def run_scenario(sc):
     """Evaluate one scenario and assert it matches its declared expectations."""
     exp = sc["expect"]
@@ -68,10 +82,16 @@ def run_scenario(sc):
             ConsequenceTier[sc["consequence"]],
             o,
             pol if o else None,
+            superseded(sc.get("supersession")),
         )
     assert g.reversibility.name == exp["reversibility"]
     assert g.oversight.name == exp["oversight"]
     assert g.evidence_tier == exp["evidence_tier"]
+    exp_sup = exp.get("supersession")
+    if exp_sup is not None:
+        assert g.supersession is not None, "scenario expects a supersession, none surfaced"
+        assert g.supersession.direction == exp_sup["direction"]
+        assert g.finding is exp_sup["finding"]
 
 
 def assert_manifest(scenarios, expected_ids):
