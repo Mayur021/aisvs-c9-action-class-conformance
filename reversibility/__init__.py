@@ -1,4 +1,4 @@
- """Reference implementation of reversibility-graded action-class authority.
+"""Reference implementation of reversibility-graded action-class authority.
 
 Public surface:
 
