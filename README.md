@@ -201,6 +201,26 @@ producer's adapter, outside this repository, so the core holds no
 producer-specific semantics and anyone with different telemetry can write their
 own adapter against the same vocabulary.
 
+## A sibling suite using the same method
+
+[`identity-defined-reachability-conformance`](https://github.com/Mayur021/identity-defined-reachability-conformance)
+applies the conventions in this repository
+to a different standard: the reachability properties argued for in the CSA Zero Trust
+work on identity-defined reachability. Three outcomes with NOT_ESTABLISHED as a
+first-class result, fixtures carrying expected outcomes and explicit failure
+conditions, the same provenance columns in the results table, and the same rule that a
+negative is only as strong as the discovery that produced it.
+
+It is a separate repository on purpose. Different standard, different body, and the
+N of M published here belongs to action-class scenarios alone.
+
+One point connects them. Requirement C9.2.10 folds a chain to the highest-impact
+classification present anywhere in it. A reachability framework citing that fold as a
+control inherits an open question with it: the rule says nothing about who establishes
+the chain's extent, so where an agent supplies its own plan the fold is computed over a
+set the gated party chose. This suite tests the fold. It does not test the extent
+declaration underneath it, and the sibling records the same boundary from its side.
+
 ## License
 
 Apache-2.0.
