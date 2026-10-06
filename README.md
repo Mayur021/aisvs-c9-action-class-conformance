@@ -132,6 +132,30 @@ Oversight rises with the worse of the two axes:
   model itself: these functions are the policy the proposed action is checked
   against, they do not ask the agent what class it thinks applies.
 
+## Where the argument and the measurement are published
+
+The case this implements is set out in "Reachability is Only Half the Blast
+Radius", Cloud Security Alliance, 2 October 2026:
+<https://cloudsecurityalliance.org/blog/2026/10/02/reachability-is-only-half-the-blast-radius>
+
+That piece argues it in policy terms. Zero Trust answers what an agent may
+reach and leaves what it may do once it is there ungated, so reachability and
+action class are two axes and only one of them is enforced. It does not ship a
+way to check an implementation, which is what this repository is for.
+
+The binding gap it cites, 24.5 points across 44,172 tools on the public Model
+Context Protocol registry between June and August 2026, is the same phenomenon
+this model carries on its second axis as `bound`, `stale` and `unobserved`. The
+measurement is in "Declared vs. Observed: Measuring the Binding Gap in MCP Tool
+Declarations", Bharti and Agnihotri, Zenodo preprint, DOI
+[10.5281/zenodo.22649163](https://doi.org/10.5281/zenodo.22649163), with the
+corpus, per-tool records and verifier at
+<https://github.com/gautamgb/declared-vs-observed-paper>
+
+**Neither is a conformance claim about this code.** They are where the argument
+and the measurement live. What is here is the scenario an implementer runs
+against their own gate, and the result that run produces.
+
 ## Usage
 
 ```bash
