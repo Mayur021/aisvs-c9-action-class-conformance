@@ -121,16 +121,17 @@ Oversight rises with the worse of the two axes:
 | `approval_required` | A human approves before it runs. | enhanced |
 | `human_owns` | A named human owns the call. The strongest gate. | highest |
 
-## Mapping to OWASP AISVS v1.0, chapter C9
+## Mapping to OWASP AISVS chapter C9
 
-- **C9.2.3** trusted reversibility classification, from the tool's declared
-  effect or policy rather than the model's account, `classify()`.
-- **C9.2.4** runtime enforcement by class, `gate()` and `required_oversight()`.
-- **C9.2.10** the worst-case reversibility class across a multi-step or
-  multi-agent chain, `chain_reversibility()` and `gate_chain()`.
-- **C9.5.3** the access-control decision is enforced by policy, never by the
-  model itself: these functions are the policy the proposed action is checked
-  against, they do not ask the agent what class it thinks applies.
+Checked against the published 1.01 text. The C9 chapter is byte-identical in `1.02-dev`, so nothing further is pending.
+
+- **C9.2.3** (L2) trusted reversibility classification, from the tool's declared effect or policy rather than the model's account, `classify()`.
+- **C9.2.4** (L2) runtime enforcement by class, `gate()` and `required_oversight()`.
+- **C9.2.10** (L3) the worst-case reversibility class across a multi-step or multi-agent chain, `chain_reversibility()` and `gate_chain()`. 1.01 amended this control to add "where the chain is established by a component outside the control of the agent being gated". That clause is a property of where the chain input comes from, not of the classes in it, and this repository does not yet carry it: `gate_chain()` takes the chain as given and cannot distinguish a chain the gated agent composed for itself from one an independent component established. See issue #9.
+- **C9.2.11** (L3) **not covered.** 1.01 added a control requiring that agent execution which would exceed the approved action chain is blocked until a new approval is obtained, and that the new approval enforces the highest-impact reversibility classification present across the cumulative chain. That needs a distinction between an approved chain and an attempted one, which the current API has no notion of. Tracked in issue #9.
+- **C9.5.3** (L2) the access-control decision is enforced by policy, never by the model itself: these functions are the policy the proposed action is checked against, they do not ask the agent what class it thinks applies.
+
+Two controls in C9.2 are deliberately out of scope here. **9.2.6** and **9.2.7** cover AI-augmented review of planned high-risk actions and its protection from manipulation. Those are a second reviewer on top of the deterministic gate, and 9.2.6 states that the review "adds to, and does not replace" it.
 
 ## Where the argument and the measurement are published
 
