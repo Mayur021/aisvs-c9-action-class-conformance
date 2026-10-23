@@ -19,12 +19,14 @@ from reversibility import (
     ReversibilityClass,
     chain_binding,
     chain_reversibility,
+    chain_within_approved,
     classify,
     coverage,
     declaration_is_usable,
     effective_binding,
     gate,
     gate_chain,
+    gate_chain_extension,
     recognised_effect,
     required_oversight,
 )
@@ -366,3 +368,106 @@ def test_package_version_matches_the_distribution_version():
     declared = re.search(r'^version = "([^"]+)"', pyproject, re.MULTILINE)
     assert declared, "pyproject.toml has no version line"
     assert reversibility.__version__ == declared.group(1)
+
+
+# --- Property 15: who established the chain's extent (C9.2.10, 1.01) ----------
+
+def test_provenance_silence_leaves_the_verdict_unchanged():
+    """Adding the input must not move a result that predates it."""
+    effects = ["read_only", "recoverable_local"]
+    before = gate_chain(effects, [ConsequenceTier.LOW, ConsequenceTier.LOW])
+    after = gate_chain(
+        effects, [ConsequenceTier.LOW, ConsequenceTier.LOW],
+        chain_established_externally=None,
+    )
+    assert before.reversibility is after.reversibility
+    assert before.oversight is after.oversight
+    assert before.rationale == after.rationale
+    assert after.finding is False
+
+
+def test_externally_established_chain_is_recorded_not_penalised():
+    g = gate_chain(
+        ["read_only", "recoverable_local"],
+        [ConsequenceTier.LOW, ConsequenceTier.LOW],
+        chain_established_externally=True,
+    )
+    assert g.reversibility is ReversibilityClass.REVERSIBLE
+    assert g.finding is False
+    assert "established outside the gated agent" in g.rationale
+
+
+def test_agent_supplied_chain_extent_fails_closed_and_is_a_finding():
+    """A fold over a set the gated party chose is not a bound on that party."""
+    g = gate_chain(
+        ["read_only", "read_only"],
+        [ConsequenceTier.LOW, ConsequenceTier.LOW],
+        chain_established_externally=False,
+    )
+    assert g.reversibility is ReversibilityClass.IRREVERSIBLE
+    assert g.oversight is Oversight.HUMAN_OWNS
+    assert g.finding is True
+    assert "supplied by the gated agent" in g.rationale
+
+
+# --- Property 16: execution beyond the approved chain (C9.2.11, 1.01) --------
+
+def test_attempt_within_the_approved_chain_is_covered():
+    assert chain_within_approved(["read_only", "recoverable_local"], ["read_only"])
+    assert chain_within_approved(["read_only"], ["read_only"])
+    assert chain_within_approved(["read_only"], [])
+
+
+def test_longer_reordered_or_substituted_attempts_exceed_the_approval():
+    assert not chain_within_approved(["read_only"], ["read_only", "read_only"])
+    assert not chain_within_approved(
+        ["read_only", "recoverable_local"], ["recoverable_local", "read_only"]
+    )
+    assert not chain_within_approved(["read_only"], ["non_recoverable"])
+
+
+def test_attempt_inside_the_approval_keeps_the_existing_gate():
+    g = gate_chain_extension(
+        ["read_only", "recoverable_local"],
+        ["read_only"],
+        [ConsequenceTier.LOW, ConsequenceTier.LOW],
+    )
+    assert g.finding is False
+    assert g.oversight is Oversight.SUPERVISED
+    assert "existing approval stands" in g.rationale
+
+
+def test_exceeding_the_approval_is_blocked_pending_new_approval():
+    """Floor is APPROVAL_REQUIRED even where the cumulative class sits below it."""
+    g = gate_chain_extension(
+        ["read_only"],
+        ["read_only", "read_only"],
+        [ConsequenceTier.LOW, ConsequenceTier.LOW],
+    )
+    assert g.finding is True
+    assert g.reversibility is ReversibilityClass.READ_ONLY
+    assert g.oversight is Oversight.APPROVAL_REQUIRED
+    assert "blocked pending new approval" in g.rationale
+
+
+def test_re_approval_is_gated_on_the_cumulative_chain_not_the_extension():
+    """The extension alone is read-only; the cumulative chain is not."""
+    g = gate_chain_extension(
+        ["externally_recoverable"],
+        ["externally_recoverable", "read_only"],
+        [ConsequenceTier.LOW, ConsequenceTier.LOW],
+    )
+    assert g.reversibility is ReversibilityClass.EXTERNALLY_REVERSIBLE
+    assert g.oversight is Oversight.APPROVAL_REQUIRED
+    assert "cumulative chain of 2 step(s)" in g.rationale
+
+
+def test_an_irreversible_step_beyond_the_approval_reaches_the_hard_gate():
+    g = gate_chain_extension(
+        ["read_only"],
+        ["read_only", "non_recoverable"],
+        [ConsequenceTier.LOW, ConsequenceTier.LOW],
+    )
+    assert g.reversibility is ReversibilityClass.IRREVERSIBLE
+    assert g.oversight is Oversight.HUMAN_OWNS
+    assert g.finding is True

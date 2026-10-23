@@ -6,6 +6,7 @@ Public surface:
         ReversibilityClass, ConsequenceTier, Oversight,
         classify, required_oversight, gate, GateResult,
         chain_reversibility, gate_chain,
+        chain_within_approved, gate_chain_extension,
         Binding, Observation, ObservationPolicy, Coverage,
         effective_binding, declaration_is_usable, chain_binding, coverage,
     )
@@ -23,7 +24,12 @@ from .model import (
     required_oversight,
 )
 from .model import recognised_effect
-from .chain import chain_reversibility, gate_chain
+from .chain import (
+    chain_reversibility,
+    chain_within_approved,
+    gate_chain,
+    gate_chain_extension,
+)
 from .observation import (
     Binding,
     Coverage,
@@ -47,7 +53,9 @@ __all__ = [
     "required_oversight",
     "gate",
     "chain_reversibility",
+    "chain_within_approved",
     "gate_chain",
+    "gate_chain_extension",
     "recognised_effect",
     "Binding",
     "Observation",
@@ -59,4 +67,4 @@ __all__ = [
     "coverage",
 ]
 
-__version__ = "1.2.0"
+__version__ = "1.3.0"

@@ -127,8 +127,8 @@ Checked against the published 1.01 text. The C9 chapter is byte-identical in `1.
 
 - **C9.2.3** (L2) trusted reversibility classification, from the tool's declared effect or policy rather than the model's account, `classify()`.
 - **C9.2.4** (L2) runtime enforcement by class, `gate()` and `required_oversight()`.
-- **C9.2.10** (L3) the worst-case reversibility class across a multi-step or multi-agent chain, `chain_reversibility()` and `gate_chain()`. 1.01 amended this control to add "where the chain is established by a component outside the control of the agent being gated". That clause is a property of where the chain input comes from, not of the classes in it, and this repository does not yet carry it: `gate_chain()` takes the chain as given and cannot distinguish a chain the gated agent composed for itself from one an independent component established. See issue #9.
-- **C9.2.11** (L3) **not covered.** 1.01 added a control requiring that agent execution which would exceed the approved action chain is blocked until a new approval is obtained, and that the new approval enforces the highest-impact reversibility classification present across the cumulative chain. That needs a distinction between an approved chain and an attempted one, which the current API has no notion of. Tracked in issue #9.
+- **C9.2.10** (L3) the worst-case reversibility class across a multi-step or multi-agent chain, `chain_reversibility()` and `gate_chain()`. 1.01 amended this control to add "where the chain is established by a component outside the control of the agent being gated", which is a property of where the chain input comes from rather than of the classes in it. `gate_chain(chain_established_externally=...)` carries it: `False` means the gated agent supplied its own extent, so the fold is over a set that party chose and is not a bound on it, which fails closed and is recorded as a finding. `None` leaves every verdict as it was before the input existed.
+- **C9.2.11** (L3) execution beyond the approved chain, `chain_within_approved()` and `gate_chain_extension()`. An attempt that is a prefix of the approved chain leaves the existing approval standing. Anything else exceeds it and is blocked pending a new approval, gated on the cumulative chain of everything approved plus the steps taken past the point of divergence. The floor is `approval_required` even where the cumulative class sits below it, because the control blocks the execution rather than grading it.
 - **C9.5.3** (L2) the access-control decision is enforced by policy, never by the model itself: these functions are the policy the proposed action is checked against, they do not ask the agent what class it thinks applies.
 
 Two controls in C9.2 are deliberately out of scope here. **9.2.6** and **9.2.7** cover AI-augmented review of planned high-risk actions and its protection from manipulation. Those are a second reviewer on top of the deterministic gate, and 9.2.6 states that the review "adds to, and does not replace" it.
@@ -181,12 +181,16 @@ named one. That is why every row in `RESULTS.md` carries a suite release and a
 commit. Pin a tag rather than following `main`:
 
 ```bash
-pip install "git+https://github.com/Mayur021/aisvs-c9-action-class-conformance@v1.2.0"
+pip install "git+https://github.com/Mayur021/aisvs-c9-action-class-conformance@v1.3.0"
 ```
 
 `reversibility.__version__` reports the release you are running. The current one
-is v1.2.0, which closed four fail-open paths; a verdict recorded against v1.1.1
-or earlier does not transfer to it.
+is v1.3.0, which added coverage of the two controls AISVS 1.01 brought to C9.2:
+the chain-provenance clause on 9.2.10 and the cumulative re-approval rule in
+9.2.11. Both arrive as optional inputs that can only tighten, so a verdict
+recorded against v1.2.0 still holds where neither input is supplied. v1.2.0
+closed four fail-open paths; a verdict recorded against v1.1.1 or earlier does
+not transfer to it.
 
 ## Conformance
 
@@ -210,6 +214,12 @@ An implementation conforms if it satisfies the properties in
 12. A chain is as stale as its stalest link.
 13. The binding gap is computable, and only where observations exist.
 14. The package reports one version rather than two.
+15. Who established the chain's extent is an input, not an assumption: silence
+    leaves the verdict unchanged, an agent-supplied extent fails closed and is
+    recorded as a finding.
+16. An attempt inside the approved chain keeps the existing gate; one that
+    exceeds it is blocked pending re-approval and gated on the cumulative chain,
+    never on the extension alone.
 
 The scenarios file is the readable contract; the tests are the executable one.
 
